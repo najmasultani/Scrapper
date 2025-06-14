@@ -7,7 +7,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, TrendingUp, Activity, Leaf } from "lucide-react";
+import { Menu, Calendar, User, TrendingUp, Activity, Leaf } from "lucide-react";
 import SmartNotificationsPanel from "@/components/SmartNotificationsPanel";
 import CompostBotWidget from "@/components/CompostBotWidget";
 import CompostTypeChart from "@/components/CompostTypeChart";
@@ -85,6 +85,55 @@ const fetchMyGardenerData = async () => {
   if (error) throw new Error(error.message);
 
   return { user, gardener: profile, isDemo: false };
+};
+
+// Fetch real compost data for chart
+const fetchCompostStats = async () => {
+  // This should fetch real compost stats for restaurant/gardener
+  // For now, fallback to static data (since no stats table in db)
+  // TODO: Replace with real data if table exists
+  return [
+    { type: "Fruit Scraps", kg: 6 },
+    { type: "Coffee Grounds", kg: 3 },
+    { type: "Veggie Peels", kg: 4 },
+    { type: "Citrus", kg: 2 },
+  ];
+};
+
+// Fetch notifications
+const fetchNotifications = async () => {
+  // TODO: Replace with real notification fetching logic if table exists
+  return [
+    {
+      id: 1,
+      text: "Hey Cafe Verde, it’s been 5 days since your last listing—do you have compost today? 🏷️",
+    },
+    {
+      id: 2,
+      text: "Nearby farmer Anna just requested citrus scraps—want to offer some? 🍋",
+    },
+  ];
+};
+
+// Fetch events
+const fetchEvents = async () => {
+  // TODO: Replace with real event fetching logic if table exists
+  return [
+    {
+      id: 1,
+      type: "pickup",
+      with: "Sunrise Diner",
+      date: "Thursday",
+      time: "3:00 PM",
+      status: "scheduled",
+    },
+    {
+      id: 2,
+      type: "request",
+      with: "Leafy Gardens",
+      status: "pending",
+    },
+  ];
 };
 
 function OverviewPanel() {
@@ -312,25 +361,58 @@ function GPTWeeklySummary() {
   );
 }
 
-function EventsWidget() {
-  const [view, setView] = useState<"calendar" | "list">("list");
-  const events = [
-    {
-      id: 1,
-      type: "pickup",
-      with: "Sunrise Diner",
-      date: "Thursday",
-      time: "3:00 PM",
-      status: "scheduled", // "scheduled" | "pending"
-    },
-    {
-      id: 2,
-      type: "request",
-      with: "Leafy Gardens",
-      status: "pending",
-    },
-  ];
+// Menu Dropdown Component
+function DashboardMenu() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative z-30">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Open menu"
+        className="rounded-full"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Menu className="w-6 h-6" />
+      </Button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg p-2 animate-fade-in">
+          <a
+            href="/dashboard"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Dashboard
+          </a>
+          <a
+            href="/listings"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Browse Compost Listings
+          </a>
+          <a
+            href="/register/restaurant"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            I am a Restaurant
+          </a>
+          <a
+            href="/register/gardener"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            I am a Gardener
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
 
+function EventsWidget({ events }: { events: any[] }) {
+  const [view, setView] = useState<"calendar" | "list">("list");
   return (
     <Card className="mb-8">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -428,23 +510,45 @@ const MyCompostMatchDashboard = () => {
   // For role-adaptive CompostBot, demo as "restaurant" or "gardener"
   const userRole: "restaurant" | "gardener" = "restaurant";
 
+  // Fetch real compost data for chart
+  const { data: compostStats = [], isLoading: compostLoading } = useQuery({
+    queryKey: ["my-compost-stats"],
+    queryFn: fetchCompostStats,
+  });
+
+  // Fetch notifications
+  const { data: notifications = [] } = useQuery({
+    queryKey: ["dashboard-notifications"],
+    queryFn: fetchNotifications,
+  });
+
+  // Fetch events
+  const { data: events = [] } = useQuery({
+    queryKey: ["dashboard-events"],
+    queryFn: fetchEvents,
+  });
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-green-50 via-white to-amber-50 p-6 flex flex-col gap-6 animate-fade-in">
-      <h1 className="text-2xl font-bold text-green-900 mb-2">
-        My CompostMatch Dashboard
-      </h1>
+      {/* Header Row */}
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="text-2xl font-bold text-green-900">
+          My CompostMatch Dashboard
+        </h1>
+        <DashboardMenu />
+      </div>
 
       <OverviewPanel />
 
       <GPTWeeklySummary />
 
-      <SmartNotificationsPanel />
+      <SmartNotificationsPanel notifications={notifications} />
 
-      <CompostTypeChart />
+      <CompostTypeChart data={compostStats} loading={compostLoading} />
 
       <CompostBotWidget role={userRole} />
 
-      <EventsWidget />
+      <EventsWidget events={events} />
     </div>
   );
 };

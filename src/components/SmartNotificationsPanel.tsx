@@ -3,7 +3,12 @@ import React from "react";
 import { toast } from "@/components/ui/use-toast";
 import { Bell } from "lucide-react";
 
-const mockNotifications = [
+// Accept notifications array as prop
+interface SmartNotificationsPanelProps {
+  notifications?: { id: number; text: string }[];
+}
+
+const fallbackNotifications = [
   {
     id: 1,
     text: "Hey Cafe Verde, it’s been 5 days since your last listing—do you have compost today? 🏷️",
@@ -14,7 +19,10 @@ const mockNotifications = [
   },
 ];
 
-const SmartNotificationsPanel = () => {
+const SmartNotificationsPanel: React.FC<SmartNotificationsPanelProps> = ({
+  notifications,
+}) => {
+  const notifs = notifications && notifications.length > 0 ? notifications : fallbackNotifications;
   const handleReminder = (message: string) => {
     toast({ title: "Reminder Sent", description: message });
   };
@@ -26,7 +34,7 @@ const SmartNotificationsPanel = () => {
         Smart Notifications
       </div>
       <ul className="space-y-2">
-        {mockNotifications.map((note) => (
+        {notifs.map((note) => (
           <li
             key={note.id}
             className="flex justify-between items-center bg-amber-50 px-3 py-2 rounded hover-scale"
@@ -46,3 +54,4 @@ const SmartNotificationsPanel = () => {
 };
 
 export default SmartNotificationsPanel;
+
