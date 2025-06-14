@@ -95,7 +95,51 @@ const RegisterRestaurant = () => {
       imageUrl = data.publicUrl;
     }
 
-    // (For completeness, you may want to include the imageUrl in the submission if you later add DB saving.)
+    // 2. Get the logged-in user's ID
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (!user || userError) {
+      setIsSubmitting(false);
+      toast({
+        title: "Not signed in",
+        description: "Please log in to register your restaurant.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 3. Prepare pickup_availability as a string (date & time nicely formatted)
+    const pickupAvailability = dateRange.from && dateRange.to
+      ? `${dateRange.from.toISOString()},${dateRange.to.toISOString()},${timeRange.start},${timeRange.end}`
+      : "";
+
+    // 4. Insert restaurant listing into DB
+    const { error: dbError } = await supabase.from("restaurant_compost_listings").insert([
+      {
+        restaurant_name: restaurantName,
+        location: address,
+        contact_name: contactName,
+        compost_type: compostType,
+        amount: amount ? Number(amount) : null,
+        pickup_availability: pickupAvailability,
+        user_id: user.id,
+        image_url: imageUrl,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (dbError) {
+      setIsSubmitting(false);
+      toast({
+        title: "Failed to register restaurant",
+        description: dbError.message,
+        variant: "destructive",
+      });
+      return;
+    }
 
     toast({
       title: "Registration Submitted",
