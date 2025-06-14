@@ -764,7 +764,7 @@ const MyCompostMatchDashboard = ({ role = "restaurant", demo = false }: Props) =
   const events = demo ? DEMO_EVENTS : [];
 
   // For production mode, keep original queries:
-  const { data: compostStats: realCompostStats = [], isLoading: realCompostLoading } = useQuery({
+  const { data: realCompostStats = [], isLoading: realCompostLoading } = useQuery({
     queryKey: ["my-compost-stats"],
     queryFn: fetchCompostStats,
     enabled: !demo, // Only run in production mode
