@@ -1,8 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { MessageCircle, Save } from "lucide-react";
+import { MessageCircle, Save, Image as ImageIcon } from "lucide-react";
 
 type Listing = {
   type: string;
@@ -29,11 +28,29 @@ const CompostListingCard: React.FC<Listing> = ({
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-4 flex flex-col gap-3 border animate-fade-in">
       <div className="flex items-center gap-3">
-        <img src={image} alt={type} className="w-14 h-14 rounded-full border bg-gray-50 object-contain" />
+        <div className="w-14 h-14 rounded-full border bg-gray-50 flex items-center justify-center overflow-hidden">
+          {!imageError && image ? (
+            <img 
+              src={image} 
+              alt={`${type} from ${owner}`} 
+              className="w-full h-full object-cover"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              <ImageIcon className="w-6 h-6 text-gray-400" />
+            </div>
+          )}
+        </div>
         <div>
           <div className="font-bold text-green-800">{type}</div>
           <div className="text-xs text-gray-500">{owner} &middot; {role}</div>

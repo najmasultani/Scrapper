@@ -130,7 +130,13 @@ Return only valid JSON, no additional text or formatting.
     
     // Parse the AI response
     try {
-      const searchResults = JSON.parse(text) as SearchResult[];
+      // Clean up the response text by removing markdown code blocks and any other formatting
+      const cleanText = text
+        .replace(/```json\n?|\n?```/g, '') // Remove markdown code blocks
+        .replace(/^[\s\n]+|[\s\n]+$/g, '') // Trim whitespace and newlines
+        .replace(/^\[|\]$/g, ''); // Remove array brackets if present
+      
+      const searchResults = JSON.parse(cleanText) as SearchResult[];
       return searchResults.filter(result => result.relevanceScore >= 30);
     } catch (parseError) {
       console.error("Failed to parse AI response:", parseError);

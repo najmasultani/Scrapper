@@ -37,6 +37,7 @@ type RestaurantCompostListing = {
   compost_type: string;
   pickup_availability: string;
   created_at: string;
+  image_url?: string;
 };
 
 const fetchRestaurantListings = async () => {
@@ -88,7 +89,7 @@ const CompostListings = () => {
         restaurantListings.map((r: RestaurantCompostListing) => ({
           id: r.id,
           type: r.compost_type || "Unknown",
-          image: "/placeholder.svg",
+          image: r.image_url || "/placeholder.svg",
           quantity: "n/a", // No field for quantity
           availableDays: [r.pickup_availability || "n/a"],
           distance: "n/a", // For demo, no geolocation
