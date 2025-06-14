@@ -1,8 +1,12 @@
+
 import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 const Header = () => (
   <header className="flex items-center justify-between w-full py-6 px-4 md:px-8 border-b bg-background">
     <div className="flex items-center gap-3">
+      {/* Three lines (menu) icon at far left */}
+      <Menu className="w-7 h-7 text-green-800 mr-2 md:hidden" aria-label="Open main menu" />
       <span className="inline-block rounded-full bg-green-500/10 p-2">
         {/* Simple Scrapple logo: leave icon */}
         <svg width="36" height="36" viewBox="0 0 36 36" fill="none">

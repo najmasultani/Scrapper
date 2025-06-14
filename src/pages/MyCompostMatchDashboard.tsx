@@ -393,6 +393,7 @@ function DashboardMenu() {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative z-30">
+      {/* Always visible three lines (menu) icon at the top left on dashboard pages */}
       <Button
         variant="ghost"
         size="icon"
