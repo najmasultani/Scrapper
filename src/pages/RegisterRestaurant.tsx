@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import RegisterForm from "@/components/register/RegisterForm";
 
+type RegisterFormValues = {
+  gardenName?: string;
+  contactName: string;
+  compostType: string;
+  amount: string;
+  availabilityType?: string;
+  selectedDates?: Date[];
+  restaurantName?: string;
+  pickupAvailability?: string;
+  location?: string;
+  licenceFile?: File | null;
+};
+
 const RegisterRestaurant = () => {
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: RegisterFormValues) => {
     toast({
       title: "Registration Submitted",
       description: "Thank you! Your restaurant profile has been registered.",
