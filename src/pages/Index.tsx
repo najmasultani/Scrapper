@@ -1,11 +1,10 @@
-
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import Benefits from "@/components/Benefits";
 import CompostBotPreview from "@/components/CompostBotPreview";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import RoleSelectCard from "@/components/RoleSelectCard"; // Ensure this import exists
 
 const Index = () => {
   const navigate = useNavigate();
@@ -14,30 +13,16 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-50 via-white to-yellow-50 animate-fade-in">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center">
-        <div className="flex flex-col gap-8 mt-16 w-full max-w-xl">
-          <h2 className="text-3xl font-bold text-center text-green-800 mb-4 animate-fade-in">
-            I am a...
-          </h2>
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <Button
-              className="flex-1 bg-green-600 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/dashboard/restaurant")}
-              data-testid="demo-restaurant-btn"
-            >
-              Restaurant
-            </Button>
-            <Button
-              className="flex-1 bg-amber-500 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/dashboard/gardener")}
-              data-testid="demo-gardener-btn"
-            >
-              Gardener / Farmer
-            </Button>
-          </div>
+        {/* Hero Section */}
+        <Hero />
+
+        {/* Move "I am a..." role selection card HERE, right after hero */}
+        <div className="w-full flex justify-center mt-2">
+          <RoleSelectCard />
         </div>
-        {/* Original Homepage Content */}
+
+        {/* The rest of the homepage content */}
         <div className="mt-20 w-full">
-          <Hero />
           <HowItWorks />
           <Benefits />
           <CompostBotPreview />
@@ -49,4 +34,3 @@ const Index = () => {
 };
 
 export default Index;
-
