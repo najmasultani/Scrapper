@@ -49,6 +49,7 @@ export type Database = {
         Row: {
           amount: number | null
           compost_type: string
+          contact_name: string | null
           created_at: string
           id: string
           location: string
@@ -60,6 +61,7 @@ export type Database = {
         Insert: {
           amount?: number | null
           compost_type: string
+          contact_name?: string | null
           created_at?: string
           id?: string
           location: string
@@ -71,6 +73,7 @@ export type Database = {
         Update: {
           amount?: number | null
           compost_type?: string
+          contact_name?: string | null
           created_at?: string
           id?: string
           location?: string

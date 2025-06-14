@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,7 +69,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ role, onSubmit }) => {
         restaurantName,
         pickupAvailability,
         location,
-        licenceFile,
+        licenceFile: licenceFile || null, // Always allow null/undefined
       });
     }
   };
@@ -232,13 +231,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ role, onSubmit }) => {
                   onChange={e => {
                     if (e.target.files && e.target.files.length > 0) setLicenceFile(e.target.files[0]);
                   }}
+                  aria-label="Upload business licence (optional)"
                 />
-                <div className="text-xs text-muted-foreground mt-1">Attach your business licence (if required by local regulations).</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Attach your business licence (optional; some jurisdictions may require this).
+                </div>
               </div>
             </>
           )}
 
-          <Button type="submit" className={role === "restaurant" ? "bg-green-600 mt-4 text-lg py-3 w-full rounded-lg" : "bg-amber-500 mt-4 text-lg py-3 w-full rounded-lg"}>
+          <Button
+            type="submit"
+            className={role === "restaurant"
+              ? "bg-green-600 mt-4 text-lg py-3 w-full rounded-lg"
+              : "bg-amber-500 mt-4 text-lg py-3 w-full rounded-lg"}>
             {role === "gardener" ? "Register Garden/Farm" : "Register Restaurant/Cafe"}
           </Button>
         </form>
