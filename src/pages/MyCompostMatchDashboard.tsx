@@ -331,12 +331,12 @@ function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
           </CardHeader>
           <CardContent>
             <CardDescription>
-              {/* Show list of compost types as requested */}
               <ul className="list-disc ml-5">
-                <li>veg</li>
-                <li>fruit</li>
-                <li>scraped</li>
-                <li>egg shells</li>
+                <li>Vegetable Scraps</li>
+                <li>Fruit Scraps</li>
+                <li>Coffee Grounds</li>
+                <li>Eggshells</li>
+                <li>Other</li>
               </ul>
             </CardDescription>
           </CardContent>
