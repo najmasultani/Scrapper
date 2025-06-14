@@ -6,6 +6,7 @@ import { MessageCircle, Save, Image as ImageIcon } from "lucide-react";
 type Listing = {
   type: string;
   image: string;
+  compostImage: string;
   quantity: string;
   availableDays: string[];
   distance: string;
@@ -18,6 +19,7 @@ type Listing = {
 const CompostListingCard: React.FC<Listing> = ({
   type,
   image,
+  compostImage,
   quantity,
   availableDays,
   distance,
@@ -29,9 +31,14 @@ const CompostListingCard: React.FC<Listing> = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [compostImageError, setCompostImageError] = useState(false);
 
   const handleImageError = () => {
     setImageError(true);
+  };
+
+  const handleCompostImageError = () => {
+    setCompostImageError(true);
   };
 
   return (
@@ -41,7 +48,7 @@ const CompostListingCard: React.FC<Listing> = ({
           {!imageError && image ? (
             <img 
               src={image} 
-              alt={`${type} from ${owner}`} 
+              alt={`${owner}'s profile`} 
               className="w-full h-full object-cover"
               onError={handleImageError}
             />
@@ -56,6 +63,23 @@ const CompostListingCard: React.FC<Listing> = ({
           <div className="text-xs text-gray-500">{owner} &middot; {role}</div>
         </div>
       </div>
+
+      {/* Compost Image */}
+      <div className="w-full h-32 rounded-lg overflow-hidden bg-gray-50">
+        {!compostImageError && compostImage ? (
+          <img 
+            src={compostImage} 
+            alt={`${type} compost sample`} 
+            className="w-full h-full object-cover"
+            onError={handleCompostImageError}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <ImageIcon className="w-8 h-8 text-gray-400" />
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="bg-green-100 text-green-800 px-2 py-1 rounded">Quantity: {quantity}</span>
         <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded">Days: {availableDays.join(", ")}</span>

@@ -1,13 +1,12 @@
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, home, layoutDashboard, list } from "lucide-react";
+import { Menu, X, Home, LayoutDashboard, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
-  { name: "Home", to: "/", icon: home },
-  { name: "Dashboard", to: "/dashboard/restaurant", icon: layoutDashboard },
-  { name: "Browse Compost Listings", to: "/listings", icon: list },
+  { name: "Home", to: "/", icon: Home },
+  { name: "Dashboard", to: "/dashboard/restaurant", icon: LayoutDashboard },
+  { name: "Browse Compost Listings", to: "/listings", icon: List },
   { name: "Register Your Restaurant", to: "/register/restaurant" },
   { name: "Register Your Garden", to: "/register/gardener" },
 ];

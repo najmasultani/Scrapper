@@ -37,7 +37,6 @@ type RestaurantCompostListing = {
   compost_type: string;
   pickup_availability: string;
   created_at: string;
-  image_url?: string;
 };
 
 const fetchRestaurantListings = async () => {
