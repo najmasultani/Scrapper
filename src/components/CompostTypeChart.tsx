@@ -49,7 +49,7 @@ const CompostTypeChart: React.FC<CompostTypeChartProps> = ({ data, loading }) =>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} className="cursor-pointer">
           <XAxis dataKey="type" stroke="#666" fontSize={12} />
-          <YAxis allowDecimals={false} fontSize={12} />
+          <YAxis allowDecimals={true} fontSize={12} label={{ value: "Kg", angle: -90, position: "insideLeft" }} />
           <Tooltip />
           <Bar dataKey="kg" fill="#10b981" radius={[8, 8, 0, 0]} onClick={handleBarClick}>
             {data.map((entry, i) => (

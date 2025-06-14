@@ -99,21 +99,21 @@ const fetchCompostStats = async () => {
   // Try for restaurant
   const { data: restaurantListing, error: rError } = await supabase
     .from("restaurant_compost_listings")
-    .select("compost_type, created_at")
+    .select("compost_type, amount, created_at")
     .eq("user_id", user.id);
 
   const { data: gardenerProfile, error: gError } = await supabase
     .from("gardener_profiles")
-    .select("compost_type, created_at")
+    .select("compost_type, amount, created_at")
     .eq("user_id", user.id);
 
-  // Aggregate compost types. If both exist, include all.
+  // Use amount from DB (default to 0 if missing)
   const entries: { type: string; kg: number }[] = [];
   if (restaurantListing && restaurantListing.length > 0) {
     restaurantListing.forEach((r: any) => {
       entries.push({
         type: r.compost_type,
-        kg: Math.floor(Math.random() * 8) + 1, // Replace with actual tracking logic if exists
+        kg: Number(r.amount) || 0,
       });
     });
   }
@@ -121,7 +121,7 @@ const fetchCompostStats = async () => {
     gardenerProfile.forEach((g: any) => {
       entries.push({
         type: g.compost_type,
-        kg: Math.floor(Math.random() * 8) + 1,
+        kg: Number(g.amount) || 0,
       });
     });
   }
@@ -558,7 +558,36 @@ const MyCompostMatchDashboard = () => {
   // Fetch real compost data for chart
   const { data: compostStats = [], isLoading: compostLoading } = useQuery({
     queryKey: ["my-compost-stats"],
-    queryFn: fetchCompostStats,
+    // Instead of faking kg, use amount from the listings/profiles directly
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data: restaurantListing = [] } = await supabase
+        .from("restaurant_compost_listings")
+        .select("compost_type, amount, created_at")
+        .eq("user_id", user.id);
+
+      const { data: gardenerProfile = [] } = await supabase
+        .from("gardener_profiles")
+        .select("compost_type, amount, created_at")
+        .eq("user_id", user.id);
+
+      // Use amount from DB (default to 0 if missing)
+      const entries: { type: string; kg: number }[] = [];
+      restaurantListing.forEach((r: any) => {
+        entries.push({
+          type: r.compost_type,
+          kg: Number(r.amount) || 0,
+        });
+      });
+      gardenerProfile.forEach((g: any) => {
+        entries.push({
+          type: g.compost_type,
+          kg: Number(g.amount) || 0,
+        });
+      });
+      return entries;
+    },
   });
 
   // Fetch notifications

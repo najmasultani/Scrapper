@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       gardener_profiles: {
         Row: {
+          amount: number | null
           availability_type: string
           available_dates: string[]
           compost_type: string
@@ -21,6 +22,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          amount?: number | null
           availability_type: string
           available_dates: string[]
           compost_type: string
@@ -31,6 +33,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          amount?: number | null
           availability_type?: string
           available_dates?: string[]
           compost_type?: string
@@ -44,6 +47,7 @@ export type Database = {
       }
       restaurant_compost_listings: {
         Row: {
+          amount: number | null
           compost_type: string
           created_at: string
           id: string
@@ -54,6 +58,7 @@ export type Database = {
           website: string | null
         }
         Insert: {
+          amount?: number | null
           compost_type: string
           created_at?: string
           id?: string
@@ -64,6 +69,7 @@ export type Database = {
           website?: string | null
         }
         Update: {
+          amount?: number | null
           compost_type?: string
           created_at?: string
           id?: string

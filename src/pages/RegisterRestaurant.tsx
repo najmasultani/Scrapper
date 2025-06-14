@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,12 +23,13 @@ const RegisterRestaurant = () => {
   const [address, setAddress] = useState("");
   const [contactName, setContactName] = useState("");
   const [compostType, setCompostType] = useState("");
+  const [amount, setAmount] = useState(""); // <-- NEW
   const [availabilityType, setAvailabilityType] = useState("pickup"); // pickup or delivery
   const [selectedDates, setSelectedDates] = useState<Date[] | undefined>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just toast; in production, will save to Supabase.
+    // Save to Supabase (optional enhancement if you want, can keep the old behavior for now)
     toast({
       title: "Registration Submitted",
       description: "Thank you! Your restaurant has been registered.",
@@ -101,6 +101,21 @@ const RegisterRestaurant = () => {
                     <option value={type} key={type}>{type}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="font-semibold text-green-900 block mb-1" htmlFor="amount">
+                  Amount available (kg)
+                </label>
+                <Input
+                  id="amount"
+                  type="number"
+                  min={0}
+                  step="0.1"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  required
+                  placeholder="e.g. 5"
+                />
               </div>
               <div>
                 <label className="font-semibold text-green-900 block mb-1">

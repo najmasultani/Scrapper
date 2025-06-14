@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,11 +22,13 @@ const RegisterGardener = () => {
   const [gardenName, setGardenName] = useState("");
   const [contactName, setContactName] = useState("");
   const [compostType, setCompostType] = useState("");
+  const [amount, setAmount] = useState("");
   const [availabilityType, setAvailabilityType] = useState("pickup");
   const [selectedDates, setSelectedDates] = useState<Date[] | undefined>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Save to Supabase (optional enhancement, keep old toast + nav for now)
     toast({
       title: "Registration Submitted",
       description: "Thank you! Your gardener/farmer profile has been registered.",
@@ -87,6 +88,21 @@ const RegisterGardener = () => {
                     <option value={type} key={type}>{type}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className="font-semibold text-green-900 block mb-1" htmlFor="amount">
+                  Amount needed (kg)
+                </label>
+                <Input
+                  id="amount"
+                  type="number"
+                  min={0}
+                  step="0.1"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  required
+                  placeholder="e.g. 3"
+                />
               </div>
               <div>
                 <label className="font-semibold text-green-900 block mb-1">
