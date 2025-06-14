@@ -21,20 +21,22 @@ const Index = () => {
           <p className="text-center text-muted-foreground text-base mb-4 animate-fade-in delay-75">
             Choose your role to begin connecting with compost partners.
           </p>
-          <div className="flex flex-col md:flex-row gap-6 justify-center w-full">
+          <div className="flex flex-col md:flex-row gap-8 justify-center w-full">
             <Button
-              className="flex-1 bg-green-600 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/restaurant")}
-              data-testid="register-restaurant-btn"
+              className="flex-1 bg-[#19AA41] hover:bg-[#148d34] text-white text-2xl font-bold py-7 rounded-[2.2rem] shadow-xl transition-all min-w-[260px]"
+              style={{ boxShadow: "0 4px 32px 0 rgba(25,170,65,0.11)" }}
+              onClick={() => navigate("/dashboard/restaurant")}
+              data-testid="goto-dash-restaurant-btn"
             >
-              Register Your Restaurant
+              I am a Restaurant
             </Button>
             <Button
-              className="flex-1 bg-amber-500 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/gardener")}
-              data-testid="register-gardener-btn"
+              className="flex-1 bg-[#F6A100] hover:bg-[#c88400] text-white text-2xl font-bold py-7 rounded-[2.2rem] shadow-xl transition-all min-w-[260px]"
+              style={{ boxShadow: "0 4px 32px 0 rgba(246,161,0,0.11)" }}
+              onClick={() => navigate("/dashboard/gardener")}
+              data-testid="goto-dash-gardener-btn"
             >
-              Register Your Garden
+              I am a Gardener
             </Button>
           </div>
         </div>
