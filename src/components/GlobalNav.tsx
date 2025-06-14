@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, LayoutDashboard, List } from "lucide-react";
+import { Menu, X, Home, LayoutDashboard, List, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navigation = [
   { name: "Home", to: "/", icon: Home },
   { name: "Dashboard", to: "/dashboard/restaurant", icon: LayoutDashboard },
   { name: "Browse Compost Listings", to: "/listings", icon: List },
-  { name: "Register Your Restaurant", to: "/register/restaurant" },
-  { name: "Register Your Garden", to: "/register/gardener" },
+  { name: "Register Your Restaurant", to: "/register/restaurant", icon: Leaf },
+  { name: "Register Your Garden", to: "/register/gardener", icon: Leaf },
 ];
 
 export default function GlobalNav() {

@@ -37,6 +37,8 @@ type RestaurantCompostListing = {
   compost_type: string;
   pickup_availability: string;
   created_at: string;
+  image_url?: string;
+  compost_image_url?: string;
 };
 
 const fetchRestaurantListings = async () => {
@@ -89,6 +91,7 @@ const CompostListings = () => {
           id: r.id,
           type: r.compost_type || "Unknown",
           image: r.image_url || "/placeholder.svg",
+          compostImage: r.compost_image_url || "/placeholder.svg",
           quantity: "n/a", // No field for quantity
           availableDays: [r.pickup_availability || "n/a"],
           distance: "n/a", // For demo, no geolocation
@@ -106,6 +109,7 @@ const CompostListings = () => {
           id: g.id,
           type: g.compost_type || "Unknown",
           image: "/placeholder.svg",
+          compostImage: "/placeholder.svg",
           quantity: "n/a", // No explicit field
           availableDays: g.available_dates || [],
           distance: "n/a", // No distance, could be enhanced with location in the future
