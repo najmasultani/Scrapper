@@ -307,6 +307,7 @@ function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
       </div>
     );
   } else {
+    // RESTAURANT DEMO 
     const { restaurant, isDemo } = DEMO_RESTAURANT;
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -314,8 +315,7 @@ function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
           <CardHeader className="flex flex-row items-center gap-2">
             <User className="text-green-600" />
             <CardTitle className="text-base">
-              Restaurant Partner{" "}
-              <span className="text-xs text-amber-600 font-normal">(Demo)</span>
+              Restaurant Partner
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -330,7 +330,15 @@ function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
             <CardTitle className="text-base">Compost Type</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>{restaurant.compost_type}</CardDescription>
+            <CardDescription>
+              {/* Show list of compost types as requested */}
+              <ul className="list-disc ml-5">
+                <li>veg</li>
+                <li>fruit</li>
+                <li>scraped</li>
+                <li>egg shells</li>
+              </ul>
+            </CardDescription>
           </CardContent>
         </Card>
         <Card>
