@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,9 @@ import MyCompostMatchDashboard from "./pages/MyCompostMatchDashboard";
 import RegisterRestaurant from "./pages/RegisterRestaurant";
 import RegisterGardener from "./pages/RegisterGardener";
 import AuthPage from "./pages/AuthPage";
+// Import new wrappers:
+import RestaurantDashboard from "./pages/RestaurantDashboard";
+import GardenerDashboard from "./pages/GardenerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +30,9 @@ const App = () => (
           <Route path="/register/gardener" element={<RegisterGardener />} />
           <Route path="/listings" element={<CompostListings />} />
           <Route path="/dashboard" element={<MyCompostMatchDashboard />} />
+          {/* --- DEMO: Role-specific dashboards --- */}
+          <Route path="/dashboard/restaurant" element={<RestaurantDashboard />} />
+          <Route path="/dashboard/gardener" element={<GardenerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

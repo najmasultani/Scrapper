@@ -46,15 +46,27 @@ const CompostListingCard: React.FC<Listing> = ({
         {pickup && <span className="bg-lime-100 text-lime-800 px-2 py-1 rounded">Pickup</span>}
         {delivery && <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Delivery</span>}
       </div>
-      <div className="flex gap-2 mt-auto">
-        <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
+      {/* Button row: equally spaced, inside card */}
+      <div className="flex w-full items-center justify-between gap-2 mt-auto pt-2">
+        <Button 
+          variant="secondary"
+          className="flex-1"
+          onClick={() => setConfirmOpen(true)}
+        >
           Request Pickup
         </Button>
-        <Button variant="ghost" onClick={() => setChatOpen(true)}>
+        <Button 
+          variant="ghost"
+          className="flex-1"
+          onClick={() => setChatOpen(true)}
+        >
           <MessageCircle />
           Chat
         </Button>
-        <Button variant="ghost">
+        <Button 
+          variant="ghost"
+          className="flex-1"
+        >
           <Save />
           Save
         </Button>
@@ -100,3 +112,4 @@ const CompostListingCard: React.FC<Listing> = ({
 };
 
 export default CompostListingCard;
+

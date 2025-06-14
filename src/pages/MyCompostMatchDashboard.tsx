@@ -14,6 +14,66 @@ import CompostTypeChart from "@/components/CompostTypeChart";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+type Props = {
+  role?: "restaurant" | "gardener";
+  demo?: boolean;
+};
+
+// Demo data for both roles:
+const DEMO_GARDENER = {
+  gardener: {
+    garden_name: "Hackathon Community Garden",
+    contact_name: "Jamie Lin",
+    compost_type: "Vegetable scraps",
+    amount: 7,
+    availability_type: "Weekly Pickup",
+    available_dates: [
+      "2025-07-01T00:00:00.000Z",
+      "2025-07-08T00:00:00.000Z",
+    ],
+    created_at: "2025-06-12T14:22:00.000Z",
+  },
+  isDemo: true,
+};
+const DEMO_RESTAURANT = {
+  restaurant: {
+    restaurant_name: "Green Eats Café",
+    contact_name: "Alex Rivera",
+    compost_type: "Produce trimmings",
+    amount: 12,
+    pickup_availability: "M-F 7am-11am",
+    location: "555 Organic Ave, Townsville",
+    created_at: "2025-06-13T10:55:00.000Z",
+  },
+  isDemo: true,
+};
+const DEMO_COMPOST_STATS = [
+  { type: "Produce trimmings", kg: 7 },
+  { type: "Coffee grounds", kg: 2 },
+];
+const DEMO_NOTIFICATIONS = [
+  {
+    id: 1,
+    text: "Thanks for using Scrapple at the Hackathon! 🚀",
+  },
+];
+const DEMO_EVENTS = [
+  {
+    id: 101,
+    status: "scheduled",
+    with: "Jamie Lin (Green Eats Café)",
+    date: "July 2, 2025",
+    time: "9:00am",
+  },
+  {
+    id: 102,
+    status: "pending",
+    with: "Sunnyvale Urban Growers",
+    date: "July 6, 2025",
+    time: "N/A",
+  },
+];
+
 // ---------- UTILS
 
 // Fetch restaurant listing for current user or demo
@@ -155,13 +215,13 @@ const fetchNotifications = async () => {
   if (restaurantListing) {
     result.push({
       id: 1,
-      text: `Hi ${restaurantListing.restaurant_name || "there"}, thanks for being part of CompostMatch!`,
+      text: `Hi ${restaurantListing.restaurant_name || "there"}, thanks for being part of Scrapple!`,
     });
   }
   if (gardenerProfile) {
     result.push({
       id: 2,
-      text: `Hello ${gardenerProfile.garden_name || "gardener"}, don't forget to check for new compost matches.`,
+      text: `Hello ${gardenerProfile.garden_name || "gardener"}, don't forget to check for new compost matches on Scrapple.`,
     });
   }
   return result;
@@ -177,6 +237,313 @@ const fetchEvents = async () => {
   // Since no events table exists, return empty (for now)
   return [];
 };
+
+function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
+  if (role === "gardener") {
+    const { gardener, isDemo } = DEMO_GARDENER;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Leaf className="text-green-600" />
+            <CardTitle className="text-base">
+              Gardener / Farmer{" "}
+              <span className="text-xs text-amber-600 font-normal">(Demo)</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <div className="font-semibold">{gardener.garden_name}</div>
+              <div className="text-xs mt-1 text-muted-foreground">
+                {gardener.contact_name}
+              </div>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <TrendingUp className="text-yellow-700" />
+            <CardTitle className="text-base">Compost Wanted</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>{gardener.compost_type}</CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Activity className="text-blue-700" />
+            <CardTitle className="text-base capitalize">
+              {gardener.availability_type}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <span className="block mb-1 font-medium">Available Dates:</span>
+              <ul className="list-disc ml-5">
+                {gardener.available_dates.map((d: string | Date, i: number) => (
+                  <li key={i}>
+                    {typeof d === "string"
+                      ? new Date(d).toLocaleDateString()
+                      : d.toLocaleDateString()}
+                  </li>
+                ))}
+              </ul>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calendar className="text-emerald-600" />
+            <CardTitle className="text-base">Profile Created</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {gardener.created_at
+                ? new Date(gardener.created_at).toLocaleString()
+                : "-"}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  } else {
+    // RESTAURANT DEMO 
+    const { restaurant, isDemo } = DEMO_RESTAURANT;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <User className="text-green-600" />
+            <CardTitle className="text-base">
+              Restaurant Partner
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {restaurant.restaurant_name || "N/A"}
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <TrendingUp className="text-yellow-700" />
+            <CardTitle className="text-base">Compost Type</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <ul className="list-disc ml-5">
+                <li>Vegetable Scraps</li>
+                <li>Fruit Scraps</li>
+                <li>Coffee Grounds</li>
+                <li>Eggshells</li>
+                <li>Other</li>
+              </ul>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Activity className="text-blue-700" />
+            <CardTitle className="text-base capitalize">
+              {restaurant.pickup_availability}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <div className="font-semibold">Address:</div>
+              <div className="text-xs">{restaurant.location}</div>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calendar className="text-emerald-600" />
+            <CardTitle className="text-base">Listing Created</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {restaurant.created_at
+                ? new Date(restaurant.created_at).toLocaleString()
+                : "-"}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+}
+
+function GPTWeeklySummaryDemo() {
+  return (
+    <Card className="mb-6 border-l-4 border-green-600 bg-green-50/50">
+      <CardContent>
+        <div className="text-green-900 flex items-center gap-2">
+          <User className="w-4 h-4 text-green-700" />
+          <span className="italic">
+            This week, you diverted 5 kg of organic waste and matched with a new partner garden!
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Menu Dropdown Component
+function DashboardMenu() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative z-30">
+      {/* Always visible three lines (menu) icon at the top left on dashboard pages */}
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="Open menu"
+        className="rounded-full"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Menu className="w-6 h-6" />
+      </Button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg p-2 animate-fade-in">
+          {/* New Home link at the top */}
+          <a
+            href="/"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Home
+          </a>
+          <a
+            href="/dashboard"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Dashboard
+          </a>
+          <a
+            href="/listings"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Browse Compost Listings
+          </a>
+          <a
+            href="/register/restaurant"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            I am a Restaurant
+          </a>
+          <a
+            href="/register/gardener"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            I am a Gardener
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EventsWidget({ events }: { events: any[] }) {
+  const [view, setView] = useState<"calendar" | "list">("list");
+  return (
+    <Card className="mb-8">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Upcoming Events</CardTitle>
+        <div>
+          <Button
+            variant={view === "list" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("list")}
+            className="mr-1"
+          >
+            List View
+          </Button>
+          <Button
+            variant={view === "calendar" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("calendar")}
+          >
+            Calendar View
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {view === "list" ? (
+          <ul className="space-y-3">
+            {events && events.length > 0 ? events.map((ev) =>
+              ev.status === "scheduled" ? (
+                <li
+                  key={ev.id}
+                  className="flex flex-col sm:flex-row sm:items-center bg-green-50 px-4 py-2 rounded-lg"
+                >
+                  <span>
+                    <span className="font-medium">Pickup scheduled</span> with{" "}
+                    <span className="text-green-800">{ev.with}</span> on{" "}
+                    <span className="font-semibold">{ev.date}</span> at{" "}
+                    <span>{ev.time}</span>
+                  </span>
+                  <Button
+                    size="sm"
+                    className="ml-auto mt-2 sm:mt-0"
+                    variant="outline"
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="ml-2 mt-2 sm:mt-0"
+                    variant="secondary"
+                  >
+                    Reschedule
+                  </Button>
+                </li>
+              ) : (
+                <li
+                  key={ev.id}
+                  className="flex flex-col sm:flex-row sm:items-center bg-amber-50 px-4 py-2 rounded-lg"
+                >
+                  <span>
+                    <span className="font-medium">Compost request</span> from{" "}
+                    <span className="text-green-800">{ev.with}</span>{" "}
+                    <span className="text-xs text-muted-foreground">
+                      pending your approval
+                    </span>
+                  </span>
+                  <Button
+                    size="sm"
+                    className="ml-auto mt-2 sm:mt-0"
+                    variant="default"
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="ml-2 mt-2 sm:mt-0"
+                    variant="ghost"
+                  >
+                    Decline
+                  </Button>
+                </li>
+              )
+            )
+            : (
+              <li className="text-gray-500 italic px-4 py-2">No upcoming events found.</li>
+            )}
+          </ul>
+        ) : (
+          <div className="flex items-center justify-center py-8 text-gray-500">
+            {/* Placeholder calendar view */}
+            <span>Calendar view coming soon!</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function OverviewPanel() {
   // Fetch both types; prioritize gardener if present
@@ -396,210 +763,44 @@ function GPTWeeklySummary() {
       <CardContent>
         <div className="text-green-900 flex items-center gap-2">
           <User className="w-4 h-4 text-green-700" />
-          <span className="italic">This week, you diverted organic waste and helped gardeners improve soil quality.</span>
+          <span className="italic">
+            This week, you diverted organic waste and helped gardeners improve soil quality with Scrapple.
+          </span>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-// Menu Dropdown Component
-function DashboardMenu() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative z-30">
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Open menu"
-        className="rounded-full"
-        onClick={() => setOpen((v) => !v)}
-      >
-        <Menu className="w-6 h-6" />
-      </Button>
-      {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg p-2 animate-fade-in">
-          <a
-            href="/dashboard"
-            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
-            onClick={() => setOpen(false)}
-          >
-            Dashboard
-          </a>
-          <a
-            href="/listings"
-            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
-            onClick={() => setOpen(false)}
-          >
-            Browse Compost Listings
-          </a>
-          <a
-            href="/register/restaurant"
-            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
-            onClick={() => setOpen(false)}
-          >
-            I am a Restaurant
-          </a>
-          <a
-            href="/register/gardener"
-            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
-            onClick={() => setOpen(false)}
-          >
-            I am a Gardener
-          </a>
-        </div>
-      )}
-    </div>
-  );
-}
+const MyCompostMatchDashboard = ({ role = "restaurant", demo = false }: Props) => {
+  // For role-adaptive CompostBot
+  const userRole: "restaurant" | "gardener" = role;
 
-function EventsWidget({ events }: { events: any[] }) {
-  const [view, setView] = useState<"calendar" | "list">("list");
-  return (
-    <Card className="mb-8">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Upcoming Events</CardTitle>
-        <div>
-          <Button
-            variant={view === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setView("list")}
-            className="mr-1"
-          >
-            List View
-          </Button>
-          <Button
-            variant={view === "calendar" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setView("calendar")}
-          >
-            Calendar View
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {view === "list" ? (
-          <ul className="space-y-3">
-            {events && events.length > 0 ? events.map((ev) =>
-              ev.status === "scheduled" ? (
-                <li
-                  key={ev.id}
-                  className="flex flex-col sm:flex-row sm:items-center bg-green-50 px-4 py-2 rounded-lg"
-                >
-                  <span>
-                    <span className="font-medium">Pickup scheduled</span> with{" "}
-                    <span className="text-green-800">{ev.with}</span> on{" "}
-                    <span className="font-semibold">{ev.date}</span> at{" "}
-                    <span>{ev.time}</span>
-                  </span>
-                  <Button
-                    size="sm"
-                    className="ml-auto mt-2 sm:mt-0"
-                    variant="outline"
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="ml-2 mt-2 sm:mt-0"
-                    variant="secondary"
-                  >
-                    Reschedule
-                  </Button>
-                </li>
-              ) : (
-                <li
-                  key={ev.id}
-                  className="flex flex-col sm:flex-row sm:items-center bg-amber-50 px-4 py-2 rounded-lg"
-                >
-                  <span>
-                    <span className="font-medium">Compost request</span> from{" "}
-                    <span className="text-green-800">{ev.with}</span>{" "}
-                    <span className="text-xs text-muted-foreground">
-                      pending your approval
-                    </span>
-                  </span>
-                  <Button
-                    size="sm"
-                    className="ml-auto mt-2 sm:mt-0"
-                    variant="default"
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="ml-2 mt-2 sm:mt-0"
-                    variant="ghost"
-                  >
-                    Decline
-                  </Button>
-                </li>
-              )
-            )
-            : (
-              <li className="text-gray-500 italic px-4 py-2">No upcoming events found.</li>
-            )}
-          </ul>
-        ) : (
-          <div className="flex items-center justify-center py-8 text-gray-500">
-            {/* Placeholder calendar view */}
-            <span>Calendar view coming soon!</span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+  // If demo mode, use hardcoded demo data:
+  const compostStats = demo ? DEMO_COMPOST_STATS : [];
+  const compostLoading = false;
+  const notifications = demo ? DEMO_NOTIFICATIONS : [];
+  const events = demo ? DEMO_EVENTS : [];
 
-const MyCompostMatchDashboard = () => {
-  // For role-adaptive CompostBot, demo as "restaurant" or "gardener"
-  const userRole: "restaurant" | "gardener" = "restaurant";
-
-  // Fetch real compost data for chart
-  const { data: compostStats = [], isLoading: compostLoading } = useQuery({
+  // For production mode, keep original queries:
+  const { data: realCompostStats = [], isLoading: realCompostLoading } = useQuery({
     queryKey: ["my-compost-stats"],
-    // Instead of faking kg, use amount from the listings/profiles directly
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data: restaurantListing = [] } = await supabase
-        .from("restaurant_compost_listings")
-        .select("compost_type, amount, created_at")
-        .eq("user_id", user.id);
-
-      const { data: gardenerProfile = [] } = await supabase
-        .from("gardener_profiles")
-        .select("compost_type, amount, created_at")
-        .eq("user_id", user.id);
-
-      // Use amount from DB (default to 0 if missing)
-      const entries: { type: string; kg: number }[] = [];
-      restaurantListing.forEach((r: any) => {
-        entries.push({
-          type: r.compost_type,
-          kg: Number(r.amount) || 0,
-        });
-      });
-      gardenerProfile.forEach((g: any) => {
-        entries.push({
-          type: g.compost_type,
-          kg: Number(g.amount) || 0,
-        });
-      });
-      return entries;
-    },
+    queryFn: fetchCompostStats,
+    enabled: !demo, // Only run in production mode
   });
 
   // Fetch notifications
-  const { data: notifications = [] } = useQuery({
+  const { data: notificationsData = [] } = useQuery({
     queryKey: ["dashboard-notifications"],
     queryFn: fetchNotifications,
+    enabled: !demo,
   });
 
   // Fetch events
-  const { data: events = [] } = useQuery({
+  const { data: eventsData = [] } = useQuery({
     queryKey: ["dashboard-events"],
     queryFn: fetchEvents,
+    enabled: !demo,
   });
 
   return (
@@ -607,22 +808,31 @@ const MyCompostMatchDashboard = () => {
       {/* Header Row */}
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold text-green-900">
-          My CompostMatch Dashboard
+          My Scrapple Dashboard
         </h1>
         <DashboardMenu />
       </div>
 
-      <OverviewPanel />
+      {demo ? (
+        <>
+          <OverviewPanelDemo role={userRole} />
+          <GPTWeeklySummaryDemo />
+        </>
+      ) : (
+        <>
+          {/* Original production (non-demo) dashboard panels */}
+          <OverviewPanel />
+          <GPTWeeklySummary />
+        </>
+      )}
 
-      <GPTWeeklySummary />
+      <SmartNotificationsPanel notifications={demo ? notifications : notificationsData} />
 
-      <SmartNotificationsPanel notifications={notifications} />
-
-      <CompostTypeChart data={compostStats} loading={compostLoading} />
+      <CompostTypeChart data={demo ? compostStats : realCompostStats} loading={demo ? compostLoading : realCompostLoading} />
 
       <CompostBotWidget role={userRole} />
 
-      <EventsWidget events={events} />
+      <EventsWidget events={demo ? events : eventsData} />
     </div>
   );
 };

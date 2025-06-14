@@ -1,3 +1,4 @@
+
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
@@ -20,13 +21,15 @@ const Index = () => {
           <div className="flex flex-col md:flex-row gap-6 justify-center">
             <Button
               className="flex-1 bg-green-600 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/restaurant")}
+              onClick={() => navigate("/dashboard/restaurant")}
+              data-testid="demo-restaurant-btn"
             >
               Restaurant
             </Button>
             <Button
               className="flex-1 bg-amber-500 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/gardener")}
+              onClick={() => navigate("/dashboard/gardener")}
+              data-testid="demo-gardener-btn"
             >
               Gardener / Farmer
             </Button>
@@ -46,3 +49,4 @@ const Index = () => {
 };
 
 export default Index;
+
