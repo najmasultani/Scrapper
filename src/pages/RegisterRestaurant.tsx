@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,9 @@ import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import MapLocationPicker from "@/components/MapLocationPicker";
+import ImageUpload from "@/components/ImageUpload";
 import { CalendarIcon, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const compostTypes = [
   "Vegetable Scraps",
@@ -19,18 +22,29 @@ const compostTypes = [
   "Other",
 ];
 
+type DateRange = { from?: Date; to?: Date };
+
 const RegisterRestaurant = () => {
   const navigate = useNavigate();
   const [restaurantName, setRestaurantName] = useState("");
   const [location, setLocation] = useState<{ lng: number; lat: number; address: string } | null>(null);
   const [contactName, setContactName] = useState("");
   const [compostType, setCompostType] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [amount, setAmount] = useState(""); // <-- NEW
   const [availabilityType, setAvailabilityType] = useState("pickup"); // pickup or delivery
   // Date Range Picker states
-  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
+  const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined });
   // Time Range
   const [timeRange, setTimeRange] = useState<{ start: string; end: string }>({ start: "09:00", end: "17:00" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // image upload handlers
+  function handleImageChange(file: File | null, url: string | null) {
+    setImageFile(file);
+    setImagePreview(url);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +63,43 @@ const RegisterRestaurant = () => {
       });
       return;
     }
-    // Save to Supabase (optional for later)
+    if (!imageFile) {
+      toast({
+        title: "Image required",
+        description: "Please upload a representative image for your restaurant.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // 1. Upload image to Supabase Storage
+    const fileExt = imageFile.name.split(".").pop();
+    const filePath = `${crypto.randomUUID()}.${fileExt}`;
+    let imageUrl = "";
+    const { data: uploadData, error: uploadErr } = await supabase.storage
+      .from("restaurant-images")
+      .upload(filePath, imageFile, { cacheControl: "3600", upsert: false });
+
+    if (uploadErr) {
+      setIsSubmitting(false);
+      toast({
+        title: "Image Upload Failed",
+        description: uploadErr.message,
+        variant: "destructive",
+      });
+      return;
+    } else if (uploadData) {
+      // Get the public URL
+      const { data } = supabase.storage
+        .from("restaurant-images")
+        .getPublicUrl(filePath);
+      imageUrl = data.publicUrl;
+    }
+
+    // (For completeness, you may want to include the imageUrl in the submission if you later add DB saving.)
+
     toast({
       title: "Registration Submitted",
       description: "Thank you! Your restaurant has been registered.",
@@ -100,6 +150,16 @@ const RegisterRestaurant = () => {
                   onChange={setLocation}
                 />
                 <input type="hidden" name="address" value={location?.address || ""} />
+              </div>
+              {/* IMAGE UPLOAD */}
+              <div>
+                <label className="font-semibold text-green-900 block mb-1">
+                  Restaurant Photo
+                </label>
+                <ImageUpload onFileChange={handleImageChange} />
+                <div className="text-sm text-muted-foreground">
+                  JPG, PNG or GIF supported. Max 5MB.
+                </div>
               </div>
               <div>
                 <label className="font-semibold text-green-900 block mb-1" htmlFor="contact_name">
@@ -163,7 +223,6 @@ const RegisterRestaurant = () => {
                 </RadioGroup>
                 {/* Date range picker */}
                 <div className="mt-4">
-                  {/* Date range selection using two calendars */}
                   <div className="flex flex-col sm:flex-row gap-3 items-center">
                     <Calendar
                       mode="range"
@@ -206,10 +265,20 @@ const RegisterRestaurant = () => {
                   </div>
                 </div>
               </div>
-              <Button type="submit" className="bg-green-600 mt-4 text-lg py-3 w-full rounded-lg">
-                Register Restaurant
+              <Button
+                type="submit"
+                className="bg-green-600 mt-4 text-lg py-3 w-full rounded-lg"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Registering…" : "Register Restaurant"}
               </Button>
-              <Button type="button" variant="secondary" className="mt-2 w-full" onClick={() => navigate("/")}>
+              <Button
+                type="button"
+                variant="secondary"
+                className="mt-2 w-full"
+                onClick={() => navigate("/")}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
             </form>

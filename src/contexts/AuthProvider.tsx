@@ -1,14 +1,11 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
-// The type of the user/session you expect to read in AuthContext:
+// Relaxed session context type: just mirror what's provided by supabase-js
 type Session = {
-  user: {
-    id: string;
-    email: string;
-    // ...add other fields you need
-  } | null;
+  user: User | null;
 };
 
 export const AuthContext = createContext<Session | null>(null);
@@ -20,12 +17,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Listen for Supabase auth changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setSession(session ? { user: session.user } : null);
+        setSession(session ? { user: session.user } : { user: null });
       }
     );
     // Get current session on mount
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session ? { user: data.session.user } : null);
+      setSession(data.session ? { user: data.session.user } : { user: null });
     });
     return () => {
       listener?.subscription.unsubscribe();
