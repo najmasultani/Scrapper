@@ -8,7 +8,6 @@ import { format } from "date-fns";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import MapLocationPicker from "@/components/MapLocationPicker";
 import ImageUpload from "@/components/ImageUpload";
 import { CalendarIcon, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +24,7 @@ const compostTypes = [
 const RegisterRestaurant = () => {
   const navigate = useNavigate();
   const [restaurantName, setRestaurantName] = useState("");
-  const [location, setLocation] = useState<{ lng: number; lat: number; address: string } | null>(null);
+  const [address, setAddress] = useState("");
   const [contactName, setContactName] = useState("");
   const [compostType, setCompostType] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -46,10 +45,10 @@ const RegisterRestaurant = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!location) {
+    if (!address.trim()) {
       toast({
-        title: "Location required",
-        description: "Please pick your restaurant's location on the map.",
+        title: "Address required",
+        description: "Please enter your restaurant's address.",
         variant: "destructive",
       });
       return;
@@ -138,16 +137,18 @@ const RegisterRestaurant = () => {
                   placeholder="e.g. Cafe Verde"
                 />
               </div>
-              {/* LIVE LOCATION PICKER */}
+              {/* ADDRESS TEXT INPUT */}
               <div>
                 <label className="font-semibold text-green-900 block mb-1" htmlFor="address">
-                  Restaurant Address (Pick on Map)
+                  Restaurant Address
                 </label>
-                <MapLocationPicker
-                  value={location || undefined}
-                  onChange={setLocation}
+                <Input
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                  placeholder="Enter your address"
                 />
-                <input type="hidden" name="address" value={location?.address || ""} />
               </div>
               {/* IMAGE UPLOAD */}
               <div>
