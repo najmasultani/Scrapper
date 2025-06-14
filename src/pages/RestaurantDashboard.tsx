@@ -11,7 +11,7 @@ const RestaurantDashboard = () => {
         <h1 className="text-2xl font-bold text-green-900 mb-2">
           My Scrapple Dashboard
         </h1>
-        {/* Upload Compost button now works */}
+        {/* Upload Compost button (now works & only visible for restaurants) */}
         <CompostUploadDialog />
       </div>
       {/* Dashboard Content */}

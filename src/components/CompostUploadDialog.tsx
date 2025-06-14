@@ -1,15 +1,24 @@
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthContext } from "@/contexts/AuthProvider";
 
-const CompostUploadDialog: React.FC = () => {
+interface CompostUploadDialogProps {
+  forceHide?: boolean;
+}
+
+// This dialog will not render if forceHide=true
+const CompostUploadDialog: React.FC<CompostUploadDialogProps> = ({ forceHide }) => {
   const [open, setOpen] = useState(false);
   const [compostType, setCompostType] = useState("");
   const [loading, setLoading] = useState(false);
+  const session = useContext(AuthContext); // read from context
+
+  if (forceHide) return null;
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,9 +28,8 @@ const CompostUploadDialog: React.FC = () => {
     }
     setLoading(true);
 
-    // Get user_id from Supabase session
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
+    // Get user_id from session context
+    const userId = session && session.user ? session.user.id : null;
 
     if (!userId) {
       toast({ title: "Not signed in", description: "Please log in to upload." });
@@ -29,8 +37,6 @@ const CompostUploadDialog: React.FC = () => {
       return;
     }
 
-    // Insert into restaurant_compost_listings (required fields: compost_type, location, pickup_availability)
-    // Placeholder values for location/pickup_availability
     const { error } = await supabase
       .from("restaurant_compost_listings")
       .insert({
@@ -82,3 +88,4 @@ const CompostUploadDialog: React.FC = () => {
 };
 
 export default CompostUploadDialog;
+
