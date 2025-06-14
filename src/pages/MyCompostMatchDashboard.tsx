@@ -54,7 +54,7 @@ const DEMO_COMPOST_STATS = [
 const DEMO_NOTIFICATIONS = [
   {
     id: 1,
-    text: "Thanks for using CompostMatch at the Hackathon! 🚀",
+    text: "Thanks for using Scrapple at the Hackathon! 🚀",
   },
 ];
 const DEMO_EVENTS = [
@@ -215,13 +215,13 @@ const fetchNotifications = async () => {
   if (restaurantListing) {
     result.push({
       id: 1,
-      text: `Hi ${restaurantListing.restaurant_name || "there"}, thanks for being part of CompostMatch!`,
+      text: `Hi ${restaurantListing.restaurant_name || "there"}, thanks for being part of Scrapple!`,
     });
   }
   if (gardenerProfile) {
     result.push({
       id: 2,
-      text: `Hello ${gardenerProfile.garden_name || "gardener"}, don't forget to check for new compost matches.`,
+      text: `Hello ${gardenerProfile.garden_name || "gardener"}, don't forget to check for new compost matches on Scrapple.`,
     });
   }
   return result;
@@ -754,7 +754,9 @@ function GPTWeeklySummary() {
       <CardContent>
         <div className="text-green-900 flex items-center gap-2">
           <User className="w-4 h-4 text-green-700" />
-          <span className="italic">This week, you diverted organic waste and helped gardeners improve soil quality.</span>
+          <span className="italic">
+            This week, you diverted organic waste and helped gardeners improve soil quality with Scrapple.
+          </span>
         </div>
       </CardContent>
     </Card>
@@ -797,7 +799,7 @@ const MyCompostMatchDashboard = ({ role = "restaurant", demo = false }: Props) =
       {/* Header Row */}
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold text-green-900">
-          My CompostMatch Dashboard
+          My Scrapple Dashboard
         </h1>
         <DashboardMenu />
       </div>
