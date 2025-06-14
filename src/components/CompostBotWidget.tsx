@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Bot, MessageCircle } from "lucide-react";
 
@@ -55,6 +54,78 @@ const BOT_KNOWLEDGE = [
   {
     pattern: /(why|benefit|advantages).*compost/i,
     answer: "Composting diverts waste from landfills and creates nutrient-rich soil for your garden. 🌱",
+  },
+  // === CompostMatch "How the App Works" and feature/FAQ ===
+  {
+    pattern: /(what\s*is\s*compostmatch|how\s*does\s*compostmatch\s*work|about\s*compostmatch|why\s*compostmatch|purpose|mission)/i,
+    answer:
+      "🌱 CompostMatch connects restaurants and other food producers with local gardeners and farmers who want compost. It reduces landfill waste and supports community food systems.",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(use|start|sign\s*up|register|join).*compostmatch|how.*(sign up|registration|create account))/i,
+    answer:
+      "🧭 To start using CompostMatch:\n1. Sign up and choose your role (Restaurant, Gardener, or Farmer)\n2. Add your location (e.g., restaurant or garden)\n3. Post compost listings (type, quantity, pickup time)\n4. Or: Search for nearby compost/partners to match!\n5. Schedule pickup or delivery via the in-app calendar.",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(post|add|list).*compost|add.*listing|new\s*listing)/i,
+    answer:
+      "🧩 To list compost: On your dashboard, click 'Add Compost Listing', fill in type, quantity, and availability, then publish. Gardeners can then find and connect with you!",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(search|find|browse).*compost|find\s*nearby.*compost|geo-?match)/i,
+    answer:
+      "👀 CompostMatch features geo-matching to help you find nearby compost. Use the 'Find Compost' or 'Browse Listings' section, filter by type, and view results on the map.",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(schedule|book|arrange).*(pickup|delivery)|pickup time|arrange.*pickup|calendar)/i,
+    answer:
+      "📅 To schedule a pickup or delivery, use the calendar when creating or responding to a compost listing. You'll see available time slots and can confirm directly in the app.",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(see|view|find).*(upcoming\s*events|my\s*events|pickups|deliveries|calendar|appointments))/i,
+    answer:
+      "📆 View your upcoming pickups and events on your dashboard calendar, under the 'Upcoming Events' section. Scheduled exchanges and reminders will appear there.",
+  },
+  {
+    pattern: /(how\s*(do|can)\s*i\s*(rate|review|leave.*review|see.*rating|feedback).*(partner|user|listing|compost|exchange))/i,
+    answer:
+      "⭐ After each compost exchange, you'll be prompted to rate and review your partner on compost quality and reliability. Just follow the notification or visit the exchange in your dashboard to leave or view reviews.",
+  },
+  {
+    pattern: /(premium|pro\s*plan|extra\s*features|analytics|notifications|recurring|upgrade)/i,
+    answer:
+      "✨ With Premium, CompostMatch offers advanced analytics, extra notifications, and the ability to schedule recurring pickups/exchanges automatically.",
+  },
+  {
+    pattern: /(notification|alert|how.*get.*notified|when.*available|pickup.*reminder)/i,
+    answer:
+      "🔔 You'll receive notifications when compost is available near you, when a pickup is scheduled, and when it's time to rate an exchange. These can be managed in your notification settings.",
+  },
+  {
+    pattern: /(can\s*i\s*compost\s*bread|bread.*compost)/i,
+    answer:
+      "Yes, you can compost small amounts of bread and grains, but bury them under 'browns' (leaves, paper) to prevent pests. Avoid moldy or oily bread.",
+  },
+  {
+    pattern: /(what\s*compost\s*type.*tomato|best.*compost.*tomato)/i,
+    answer:
+      "🍅 Tomatoes love compost rich in both 'greens' (food scraps) and 'browns' (leaves, straw). Add eggshells for extra calcium and avoid unfinished/raw compost.",
+  },
+  {
+    pattern: /(what\s*happen.*after.*request.*compost|after\s*request|what\s*next)/i,
+    answer:
+      "After requesting compost, the listing owner is notified and will confirm pickup/delivery with you via the app calendar. You'll receive updates by notification.",
+  },
+  // Example seasonal/contextual (future: add from backend/user context)
+  {
+    pattern: /(season|time\s*of\s*year|spring|summer|fall|autumn|winter|advice.*seasonal|best.*time)/i,
+    answer:
+      "🍂 Composting by season:\n- Spring: Perfect time to use finished compost in gardens\n- Summer: Turn pile weekly, add more browns for moisture\n- Fall: Use fallen leaves for carbon\n- Winter: Decomposition slows, keep adding scraps and cover well.",
+  },
+  {
+    pattern: /(user\s*role|gardener|restaurant|farmer|my\s*profile|my\s*role)/i,
+    answer:
+      "CompostMatch customizes features based on your chosen role: restaurant, gardener, or farmer. Your dashboard and available actions will match your profile type.",
   },
   // General fallback, educator mode
 ];
@@ -150,3 +221,7 @@ const CompostBotWidget = ({
 };
 
 export default CompostBotWidget;
+
+// In the future, pass backend/user data here for context-aware answers:
+// Example: const CompostBotWidget = ({ user, role, location }) => { ... }
+// and use role/location/activity in responses if available.
