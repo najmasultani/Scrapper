@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CompostListings from "@/pages/CompostListings";
 import MyCompostMatchDashboard from "./pages/MyCompostMatchDashboard";
+import RegisterRestaurant from "./pages/RegisterRestaurant";
 
 const queryClient = new QueryClient();
 
@@ -18,9 +19,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/register/restaurant" element={<RegisterRestaurant />} />
+          {/* Optionally, a gardener registration can be added in the future */}
+          {/* <Route path="/register/gardener" element={<RegisterGardener />} /> */}
           <Route path="/listings" element={<CompostListings />} />
           <Route path="/dashboard" element={<MyCompostMatchDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
