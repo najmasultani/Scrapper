@@ -1,5 +1,5 @@
-
 import { Bot } from "lucide-react";
+import CompostBotWidget from "./CompostBotWidget";
 
 const CompostBotPreview = () => (
   <section className="px-4 py-14 bg-gradient-to-r from-green-50 via-amber-50 to-green-100 border-t flex justify-center">
@@ -15,12 +15,9 @@ const CompostBotPreview = () => (
           <li>How to store kitchen scraps?</li>
           <li>Seasonal composting tips</li>
         </ul>
-        <button
-          className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded-lg mt-1 hover-scale transition"
-          disabled
-        >
-          Chat with CompostBot (coming soon)
-        </button>
+        <div className="mt-2">
+          <CompostBotWidget />
+        </div>
       </div>
     </div>
   </section>
