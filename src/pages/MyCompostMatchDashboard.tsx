@@ -16,13 +16,27 @@ import { supabase } from "@/integrations/supabase/client";
 
 // ---------- UTILS
 
-// Fetch restaurant listing for current user
+// Fetch restaurant listing for current user or demo
 const fetchMyRestaurantData = async () => {
+  // Try for current user
   const {
     data: { user },
     error: userErr,
   } = await supabase.auth.getUser();
-  if (!user || userErr) throw new Error("No user logged in!");
+
+  if (!user || userErr) {
+    // Not logged in: fetch latest available restaurant
+    const { data: restaurants, error } = await supabase
+      .from("restaurant_compost_listings")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (error || !restaurants || restaurants.length === 0)
+      return { user: null, restaurant: null, isDemo: true };
+
+    return { user: null, restaurant: restaurants[0], isDemo: true };
+  }
 
   // Get user's restaurant listing (one per user)
   const { data: listing, error } = await supabase
@@ -35,16 +49,29 @@ const fetchMyRestaurantData = async () => {
 
   if (error) throw new Error(error.message);
 
-  return { user, restaurant: listing };
+  return { user, restaurant: listing, isDemo: false };
 };
 
-// Fetch gardener profile for current user
+// Fetch gardener profile for current user or demo
 const fetchMyGardenerData = async () => {
   const {
     data: { user },
     error: userErr,
   } = await supabase.auth.getUser();
-  if (!user || userErr) throw new Error("No user logged in!");
+
+  if (!user || userErr) {
+    // Not logged in: fetch latest gardener profile
+    const { data: gardeners, error } = await supabase
+      .from("gardener_profiles")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (error || !gardeners || gardeners.length === 0)
+      return { user: null, gardener: null, isDemo: true };
+
+    return { user: null, gardener: gardeners[0], isDemo: true };
+  }
 
   // Fetch most recent gardener profile for user
   const { data: profile, error } = await supabase
@@ -57,16 +84,25 @@ const fetchMyGardenerData = async () => {
 
   if (error) throw new Error(error.message);
 
-  return { user, gardener: profile };
+  return { user, gardener: profile, isDemo: false };
 };
 
 function OverviewPanel() {
-  // Fetch both types, gardener takes priority over restaurant
-  const { data: gardenerData, isLoading: gardenerLoading, error: gardenerErr } = useQuery({
+  // Fetch both types; prioritize gardener if present
+  const {
+    data: gardenerData,
+    isLoading: gardenerLoading,
+    error: gardenerErr,
+  } = useQuery({
     queryKey: ["my-dashboard-gardener"],
     queryFn: fetchMyGardenerData,
   });
-  const { data: restaurantData, isLoading: restaurantLoading, error: restaurantErr } = useQuery({
+
+  const {
+    data: restaurantData,
+    isLoading: restaurantLoading,
+    error: restaurantErr,
+  } = useQuery({
     queryKey: ["my-dashboard-restaurant"],
     queryFn: fetchMyRestaurantData,
   });
@@ -74,66 +110,83 @@ function OverviewPanel() {
   if (gardenerLoading || restaurantLoading)
     return (
       <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card><CardContent>Loading...</CardContent></Card>
-        <Card><CardContent></CardContent></Card>
-        <Card><CardContent></CardContent></Card>
-        <Card><CardContent></CardContent></Card>
-      </div>
-    );
-
-  if (gardenerErr)
-    return (
-      <div className="mb-4">
         <Card>
-          <CardContent className="text-red-500">Error (Gardener): {String(gardenerErr.message || gardenerErr)}</CardContent>
+          <CardContent>Loading...</CardContent>
+        </Card>
+        <Card>
+          <CardContent></CardContent>
+        </Card>
+        <Card>
+          <CardContent></CardContent>
+        </Card>
+        <Card>
+          <CardContent></CardContent>
         </Card>
       </div>
     );
 
-  if (restaurantErr)
+  // If gardenerErr is *not* "No user logged in!", show error box; otherwise ignore/no error
+  if (gardenerErr && !String(gardenerErr.message || gardenerErr).toLowerCase().includes("no user logged in"))
     return (
       <div className="mb-4">
         <Card>
-          <CardContent className="text-red-500">Error (Restaurant): {String(restaurantErr.message || restaurantErr)}</CardContent>
+          <CardContent className="text-red-500">
+            Error (Gardener): {String(gardenerErr.message || gardenerErr)}
+          </CardContent>
         </Card>
       </div>
     );
 
-  // If user has a gardener profile, display that
+  if (
+    restaurantErr &&
+    !String(restaurantErr.message || restaurantErr).toLowerCase().includes("no user logged in")
+  )
+    return (
+      <div className="mb-4">
+        <Card>
+          <CardContent className="text-red-500">
+            Error (Restaurant): {String(restaurantErr.message || restaurantErr)}
+          </CardContent>
+        </Card>
+      </div>
+    );
+
+  // If user has a gardener profile (priority)
   if (gardenerData?.gardener) {
-    const { gardener } = gardenerData;
+    const { gardener, isDemo } = gardenerData;
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        {/* Role & Garden/Farm Name */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Leaf className="text-green-600" />
-            <CardTitle className="text-base">Gardener / Farmer</CardTitle>
+            <CardTitle className="text-base">
+              Gardener / Farmer {isDemo ? <span className="text-xs text-amber-600 font-normal">(Demo)</span> : null}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
               <div className="font-semibold">{gardener.garden_name}</div>
-              <div className="text-xs mt-1 text-muted-foreground">{gardener.contact_name}</div>
+              <div className="text-xs mt-1 text-muted-foreground">
+                {gardener.contact_name}
+              </div>
             </CardDescription>
           </CardContent>
         </Card>
-        {/* Compost Type */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <TrendingUp className="text-yellow-700" />
             <CardTitle className="text-base">Compost Wanted</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>
-              {gardener.compost_type}
-            </CardDescription>
+            <CardDescription>{gardener.compost_type}</CardDescription>
           </CardContent>
         </Card>
-        {/* Pickup/Delivery */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Activity className="text-blue-700" />
-            <CardTitle className="text-base capitalize">{gardener.availability_type}</CardTitle>
+            <CardTitle className="text-base capitalize">
+              {gardener.availability_type}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
@@ -141,7 +194,11 @@ function OverviewPanel() {
               {gardener.available_dates.length > 0 ? (
                 <ul className="list-disc ml-5">
                   {gardener.available_dates.map((d: string | Date, i: number) => (
-                    <li key={i}>{typeof d === "string" ? new Date(d).toLocaleDateString() : d.toLocaleDateString()}</li>
+                    <li key={i}>
+                      {typeof d === "string"
+                        ? new Date(d).toLocaleDateString()
+                        : d.toLocaleDateString()}
+                    </li>
                   ))}
                 </ul>
               ) : (
@@ -150,7 +207,6 @@ function OverviewPanel() {
             </CardDescription>
           </CardContent>
         </Card>
-        {/* Signup Date */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Calendar className="text-emerald-600" />
@@ -168,42 +224,39 @@ function OverviewPanel() {
     );
   }
 
-  // Otherwise, if user has a restaurant listing, display that
+  // Otherwise, if user has a restaurant listing
   if (restaurantData?.restaurant) {
-    const { user, restaurant } = restaurantData;
+    const { user, restaurant, isDemo } = restaurantData;
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        {/* Role */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <User className="text-green-600" />
             <CardTitle className="text-base">
-              Restaurant Partner
+              Restaurant Partner {isDemo ? <span className="text-xs text-amber-600 font-normal">(Demo)</span> : null}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
-              {restaurant.restaurant_name || user.email}
+              {restaurant.restaurant_name || (user && user.email) || "N/A"}
             </CardDescription>
           </CardContent>
         </Card>
-        {/* Compost Type */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <TrendingUp className="text-yellow-700" />
             <CardTitle className="text-base">Compost Type</CardTitle>
           </CardHeader>
           <CardContent>
-            <CardDescription>
-              {restaurant.compost_type}
-            </CardDescription>
+            <CardDescription>{restaurant.compost_type}</CardDescription>
           </CardContent>
         </Card>
-        {/* Pickup/Delivery Availability */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Activity className="text-blue-700" />
-            <CardTitle className="text-base capitalize">{restaurant.pickup_availability}</CardTitle>
+            <CardTitle className="text-base capitalize">
+              {restaurant.pickup_availability}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <CardDescription>
@@ -212,7 +265,6 @@ function OverviewPanel() {
             </CardDescription>
           </CardContent>
         </Card>
-        {/* Signup Date */}
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Calendar className="text-emerald-600" />
@@ -230,12 +282,14 @@ function OverviewPanel() {
     );
   }
 
-  // No data yet for this user
+  // No data yet (for anyone)
   return (
     <div className="mb-4">
       <Card>
         <CardContent>
-          <span className="text-gray-500">No profile or listing found for your account.</span>
+          <span className="text-gray-500">
+            No profile or listing found in the system yet.
+          </span>
         </CardContent>
       </Card>
     </div>
