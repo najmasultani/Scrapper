@@ -52,6 +52,7 @@ export type Database = {
           contact_name: string | null
           created_at: string
           id: string
+          image_url: string | null
           location: string
           pickup_availability: string
           restaurant_name: string | null
@@ -64,6 +65,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           location: string
           pickup_availability: string
           restaurant_name?: string | null
@@ -76,6 +78,7 @@ export type Database = {
           contact_name?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           location?: string
           pickup_availability?: string
           restaurant_name?: string | null
