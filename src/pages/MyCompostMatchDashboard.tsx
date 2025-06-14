@@ -396,6 +396,14 @@ function DashboardMenu() {
       </Button>
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg p-2 animate-fade-in">
+          {/* New Home link at the top */}
+          <a
+            href="/"
+            className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
+            onClick={() => setOpen(false)}
+          >
+            Home
+          </a>
           <a
             href="/dashboard"
             className="block px-4 py-2 text-green-900 hover:bg-green-100 rounded"
