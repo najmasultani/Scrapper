@@ -46,6 +46,7 @@ const CompostListingCard: React.FC<Listing> = ({
         {pickup && <span className="bg-lime-100 text-lime-800 px-2 py-1 rounded">Pickup</span>}
         {delivery && <span className="bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Delivery</span>}
       </div>
+      {/* Make sure the Save button is pushed to the right */}
       <div className="flex gap-2 mt-auto">
         <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
           Request Pickup
@@ -54,7 +55,7 @@ const CompostListingCard: React.FC<Listing> = ({
           <MessageCircle />
           Chat
         </Button>
-        <Button variant="ghost">
+        <Button variant="ghost" className="ml-auto">
           <Save />
           Save
         </Button>
@@ -100,3 +101,4 @@ const CompostListingCard: React.FC<Listing> = ({
 };
 
 export default CompostListingCard;
+
