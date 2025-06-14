@@ -12,29 +12,88 @@ import { Calendar, User, TrendingUp, Activity } from "lucide-react";
 import SmartNotificationsPanel from "@/components/SmartNotificationsPanel";
 import CompostBotWidget from "@/components/CompostBotWidget";
 import CompostTypeChart from "@/components/CompostTypeChart";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+
+// ---------- UTILS
+
+// For demo: assume only one restaurant listing per user
+const fetchMyCompostData = async () => {
+  // Get current user
+  const {
+    data: { user },
+    error: userErr,
+  } = await supabase.auth.getUser();
+  if (!user || userErr) throw new Error("No user logged in!");
+
+  // Get user's restaurant listing
+  const { data: listing, error } = await supabase
+    .from("restaurant_compost_listings")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  // Fallback if no listing yet
+  if (!listing)
+    return {
+      user,
+      listing: null,
+      matches: 0,
+      weeklyCompost: 0,
+      weeklyPickups: 0,
+      impactCO2e: 0,
+    };
+
+  // Placeholder computations (real metrics need schema/data expansion)
+  return {
+    user,
+    listing,
+    matches: 2, // Placeholder: Compute from schema later
+    weeklyCompost: 4, // Placeholder
+    weeklyPickups: 1, // Placeholder
+    impactCO2e: 12.3, // Placeholder
+  };
+};
 
 function OverviewPanel() {
-  const user = {
-    name: "Cafe Verde",
-    role: "restaurant", // Change to "gardener" for demo
-    matches: 7,
-    weeklyCompost: 3,
-    weeklyPickups: 2,
-    impactCO2e: 18.2,
-  };
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["my-dashboard-data"],
+    queryFn: fetchMyCompostData,
+  });
 
-  // For animation demo
-  const [weeklyCompost, setWeeklyCompost] = useState(user.weeklyCompost);
-  const [impactCO2e, setImpactCO2e] = useState(user.impactCO2e);
+  // Animation
   const [showAdded, setShowAdded] = useState(false);
-
-  // Example animation: add +2kg on click
+  const [extraKg, setExtraKg] = useState(0);
   const handleAddKg = () => {
-    setWeeklyCompost((w) => w + 2);
-    setImpactCO2e((c) => +(c + 1.2).toFixed(1));
+    setExtraKg(extraKg + 2);
     setShowAdded(true);
     setTimeout(() => setShowAdded(false), 1400);
   };
+
+  if (isLoading)
+    return (
+      <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card><CardContent>Loading...</CardContent></Card>
+        <Card><CardContent></CardContent></Card>
+        <Card><CardContent></CardContent></Card>
+        <Card><CardContent></CardContent></Card>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="mb-4">
+        <Card>
+          <CardContent className="text-red-500">Error: {String(error.message || error)}</CardContent>
+        </Card>
+      </div>
+    );
+
+  const { user, listing, matches, weeklyCompost, weeklyPickups, impactCO2e } =
+    data || {};
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -43,11 +102,15 @@ function OverviewPanel() {
         <CardHeader className="flex flex-row items-center gap-2">
           <User className="text-green-600" />
           <CardTitle className="text-base">
-            {user.role === "restaurant" ? "Restaurant Partner" : "Gardener"}
+            {listing?.restaurant_name
+              ? "Restaurant Partner"
+              : "No listing found"}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription>{user.name}</CardDescription>
+          <CardDescription>
+            {listing?.restaurant_name || user.email}
+          </CardDescription>
         </CardContent>
       </Card>
 
@@ -55,10 +118,12 @@ function OverviewPanel() {
       <Card>
         <CardHeader className="flex flex-row items-center gap-2">
           <TrendingUp className="text-yellow-700" />
-          <CardTitle className="text-base">{user.matches} Matches</CardTitle>
+          <CardTitle className="text-base">
+            {matches} Matches
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <CardDescription>{user.matches} successful pickups</CardDescription>
+          <CardDescription>{matches} successful pickups</CardDescription>
         </CardContent>
       </Card>
 
@@ -68,7 +133,7 @@ function OverviewPanel() {
           <Activity className="text-blue-700" />
           <CardTitle className="text-base relative select-none">
             <span>
-              {weeklyCompost} kg listed
+              {weeklyCompost + extraKg} kg listed
               <button
                 className="ml-2 text-xs bg-green-100 rounded px-2 py-0.5 hover:bg-green-200 transition"
                 onClick={handleAddKg}
@@ -87,7 +152,7 @@ function OverviewPanel() {
         </CardHeader>
         <CardContent>
           <CardDescription>
-            {user.weeklyPickups} pickups this week
+            {weeklyPickups} pickups this week
           </CardDescription>
         </CardContent>
       </Card>
@@ -96,7 +161,7 @@ function OverviewPanel() {
       <Card>
         <CardHeader className="flex flex-row items-center gap-2">
           <Calendar className="text-emerald-600" />
-          <CardTitle className="text-base">{impactCO2e} kg CO₂e</CardTitle>
+          <CardTitle className="text-base">{impactCO2e + extraKg * 0.6} kg CO₂e</CardTitle>
         </CardHeader>
         <CardContent>
           <CardDescription>GHG diverted (lifetime)</CardDescription>
@@ -115,7 +180,7 @@ function GPTWeeklySummary() {
       <CardContent>
         <div className="text-green-900 flex items-center gap-2">
           <User className="w-4 h-4 text-green-700" />
-          <span className="italic">{summary}</span>
+          <span className="italic">This week, you diverted organic waste and helped gardeners improve soil quality.</span>
         </div>
       </CardContent>
     </Card>
