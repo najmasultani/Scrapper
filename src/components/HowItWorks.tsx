@@ -1,5 +1,5 @@
 
-import { Recycling, MapPin, Leaf, Handshake } from "lucide-react";
+import { Recycle, MapPin, Leaf, Handshake } from "lucide-react";
 
 const STEPS = [
   {
@@ -9,7 +9,7 @@ const STEPS = [
   },
   {
     title: "List or Find Compost",
-    icon: <Recycling className="text-amber-700" size={36} />,
+    icon: <Recycle className="text-amber-700" size={36} />,
     desc: "Restaurants post compost offers, gardeners browse local listings.",
   },
   {
