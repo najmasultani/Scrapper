@@ -1,6 +1,7 @@
 import MyCompostMatchDashboard from "./MyCompostMatchDashboard";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import CompostUploadDialog from "@/components/CompostUploadDialog";
 
 const RestaurantDashboard = () => {
   return (
@@ -10,12 +11,10 @@ const RestaurantDashboard = () => {
         <h1 className="text-2xl font-bold text-green-900 mb-2">
           My Scrapple Dashboard
         </h1>
-        <Link to="/create-batch" aria-label="Upload Compost Listing">
-          <Button className="mb-4 w-full sm:w-auto" aria-label="Upload Compost Listing">
-            + Upload Compost Listing
-          </Button>
-        </Link>
+        {/* Upload Compost button now works */}
+        <CompostUploadDialog />
       </div>
+      {/* Dashboard Content */}
       <MyCompostMatchDashboard role="restaurant" demo />
     </div>
   );
