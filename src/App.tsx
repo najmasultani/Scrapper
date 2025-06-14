@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import CompostListings from "@/pages/CompostListings";
 import MyCompostMatchDashboard from "./pages/MyCompostMatchDashboard";
 import RegisterRestaurant from "./pages/RegisterRestaurant";
+import RegisterGardener from "./pages/RegisterGardener";
 
 const queryClient = new QueryClient();
 
@@ -20,8 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/register/restaurant" element={<RegisterRestaurant />} />
-          {/* Optionally, a gardener registration can be added in the future */}
-          {/* <Route path="/register/gardener" element={<RegisterGardener />} /> */}
+          <Route path="/register/gardener" element={<RegisterGardener />} />
           <Route path="/listings" element={<CompostListings />} />
           <Route path="/dashboard" element={<MyCompostMatchDashboard />} />
           <Route path="*" element={<NotFound />} />
