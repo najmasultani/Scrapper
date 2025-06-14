@@ -48,7 +48,6 @@ export type Database = {
       restaurant_compost_listings: {
         Row: {
           amount: number | null
-          compost_image_url: string | null
           compost_type: string
           contact_name: string | null
           created_at: string
@@ -62,7 +61,6 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
-          compost_image_url?: string | null
           compost_type: string
           contact_name?: string | null
           created_at?: string
@@ -76,7 +74,6 @@ export type Database = {
         }
         Update: {
           amount?: number | null
-          compost_image_url?: string | null
           compost_type?: string
           contact_name?: string | null
           created_at?: string

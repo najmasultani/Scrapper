@@ -247,7 +247,8 @@ function OverviewPanelDemo({ role }: { role: "restaurant" | "gardener" }) {
           <CardHeader className="flex flex-row items-center gap-2">
             <Leaf className="text-green-600" />
             <CardTitle className="text-base">
-              Gardener / Farmer
+              Gardener / Farmer{" "}
+              <span className="text-xs text-amber-600 font-normal">(Demo)</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -617,7 +618,7 @@ function OverviewPanel() {
           <CardHeader className="flex flex-row items-center gap-2">
             <Leaf className="text-green-600" />
             <CardTitle className="text-base">
-              Gardener / Farmer
+              Gardener / Farmer {isDemo ? <span className="text-xs text-amber-600 font-normal">(Demo)</span> : null}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -690,7 +691,7 @@ function OverviewPanel() {
           <CardHeader className="flex flex-row items-center gap-2">
             <User className="text-green-600" />
             <CardTitle className="text-base">
-              Restaurant Partner
+              Restaurant Partner {isDemo ? <span className="text-xs text-amber-600 font-normal">(Demo)</span> : null}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -4,41 +4,6 @@
 
 **URL**: https://lovable.dev/projects/a85ae806-c5b6-4d2e-98b5-7cfbf0b84b51
 
-## AI-Powered Search Feature
-
-This project includes an intelligent search feature powered by Google's Gemini AI that allows users to search compost listings using natural language queries.
-
-### Features:
-- **Natural Language Search**: Search using phrases like "coffee grounds for my vegetable garden" or "organic waste near restaurants"
-- **AI-Powered Suggestions**: Get intelligent search suggestions based on your input
-- **Relevance Scoring**: Results are ranked by AI-determined relevance with explanations
-- **Real-time Search**: Debounced search with instant results as you type
-
-### Setup:
-
-1. **Get a Gemini API Key**:
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create a new API key for Gemini
-   - Copy the API key
-
-2. **Configure Environment Variables**:
-   - Copy `.env.example` to `.env`
-   - Add your Gemini API key:
-     ```
-     VITE_GEMINI_API_KEY=your_actual_gemini_api_key_here
-     ```
-
-3. **Security Note**: 
-   - Never commit your actual API key to version control
-   - The API key will be visible in the client-side code, so consider implementing a backend proxy for production use
-   - For development and demo purposes, the current setup is sufficient
-
-### Usage:
-- Navigate to the "Browse Compost Listings" page
-- Use the search bar at the top to enter natural language queries
-- Click on AI-generated suggestions for quick searches
-- View relevance scores and explanations for search results
-
 ## How can I edit this code?
 
 There are several ways of editing your application.
@@ -94,9 +59,6 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-- Google Gemini AI (for intelligent search)
-- Supabase (for data storage)
-- TanStack Query (for data fetching)
 
 ## How can I deploy this project?
 

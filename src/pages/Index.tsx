@@ -14,27 +14,24 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-50 via-white to-yellow-50 animate-fade-in">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center">
-        <div className="flex flex-col gap-5 mt-16 w-full max-w-xl items-center">
-          <h2 className="text-3xl font-bold text-center text-green-800 mb-1 animate-fade-in">
-            Get Started With CompostMatch
+        <div className="flex flex-col gap-8 mt-16 w-full max-w-xl">
+          <h2 className="text-3xl font-bold text-center text-green-800 mb-4 animate-fade-in">
+            I am a...
           </h2>
-          <p className="text-center text-muted-foreground text-base mb-4 animate-fade-in delay-75">
-            Choose your role to begin connecting with compost partners.
-          </p>
-          <div className="flex flex-col md:flex-row gap-6 justify-center w-full">
+          <div className="flex flex-col md:flex-row gap-6 justify-center">
             <Button
               className="flex-1 bg-green-600 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/restaurant")}
-              data-testid="register-restaurant-btn"
+              onClick={() => navigate("/dashboard/restaurant")}
+              data-testid="demo-restaurant-btn"
             >
-              Register Your Restaurant
+              Restaurant
             </Button>
             <Button
               className="flex-1 bg-amber-500 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/register/gardener")}
-              data-testid="register-gardener-btn"
+              onClick={() => navigate("/dashboard/gardener")}
+              data-testid="demo-gardener-btn"
             >
-              Register Your Garden
+              Gardener / Farmer
             </Button>
           </div>
         </div>
@@ -52,3 +49,4 @@ const Index = () => {
 };
 
 export default Index;
+
