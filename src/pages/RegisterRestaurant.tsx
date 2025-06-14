@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,22 @@ const RegisterRestaurant = () => {
   // Time Range
   const [timeRange, setTimeRange] = useState<{ start: string; end: string }>({ start: "09:00", end: "17:00" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (!user || error) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to register your restaurant.",
+          variant: "destructive",
+        });
+        navigate("/auth");
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   // image upload handlers
   function handleImageChange(file: File | null, url: string | null) {
