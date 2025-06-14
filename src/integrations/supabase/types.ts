@@ -49,8 +49,10 @@ export type Database = {
         Row: {
           amount: number | null
           compost_type: string
+          contact_name: string | null
           created_at: string
           id: string
+          image_url: string | null
           location: string
           pickup_availability: string
           restaurant_name: string | null
@@ -60,8 +62,10 @@ export type Database = {
         Insert: {
           amount?: number | null
           compost_type: string
+          contact_name?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           location: string
           pickup_availability: string
           restaurant_name?: string | null
@@ -71,8 +75,10 @@ export type Database = {
         Update: {
           amount?: number | null
           compost_type?: string
+          contact_name?: string | null
           created_at?: string
           id?: string
+          image_url?: string | null
           location?: string
           pickup_availability?: string
           restaurant_name?: string | null
