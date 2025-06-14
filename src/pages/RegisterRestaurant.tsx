@@ -8,6 +8,8 @@ import { format } from "date-fns";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import MapLocationPicker from "@/components/MapLocationPicker";
+import { CalendarIcon, Clock } from "lucide-react";
 
 const compostTypes = [
   "Vegetable Scraps",
@@ -20,22 +22,49 @@ const compostTypes = [
 const RegisterRestaurant = () => {
   const navigate = useNavigate();
   const [restaurantName, setRestaurantName] = useState("");
-  const [address, setAddress] = useState("");
+  const [location, setLocation] = useState<{ lng: number; lat: number; address: string } | null>(null);
   const [contactName, setContactName] = useState("");
   const [compostType, setCompostType] = useState("");
   const [amount, setAmount] = useState(""); // <-- NEW
   const [availabilityType, setAvailabilityType] = useState("pickup"); // pickup or delivery
-  const [selectedDates, setSelectedDates] = useState<Date[] | undefined>([]);
+  // Date Range Picker states
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
+  // Time Range
+  const [timeRange, setTimeRange] = useState<{ start: string; end: string }>({ start: "09:00", end: "17:00" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Save to Supabase (optional enhancement if you want, can keep the old behavior for now)
+    if (!location) {
+      toast({
+        title: "Location required",
+        description: "Please pick your restaurant's location on the map.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!dateRange.from || !dateRange.to) {
+      toast({
+        title: "Please select an available date range.",
+        variant: "destructive",
+      });
+      return;
+    }
+    // Save to Supabase (optional for later)
     toast({
       title: "Registration Submitted",
       description: "Thank you! Your restaurant has been registered.",
     });
     setTimeout(() => navigate("/dashboard"), 1200);
   };
+
+  // Helper for date display
+  function rangeLabel() {
+    if (!dateRange.from && !dateRange.to) return "Pick a date range";
+    if (dateRange.from && !dateRange.to) return `From ${format(dateRange.from, "PPP")}`;
+    if (dateRange.from && dateRange.to)
+      return `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`;
+    return "";
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50 flex flex-col items-center">
@@ -61,17 +90,16 @@ const RegisterRestaurant = () => {
                   placeholder="e.g. Cafe Verde"
                 />
               </div>
+              {/* LIVE LOCATION PICKER */}
               <div>
                 <label className="font-semibold text-green-900 block mb-1" htmlFor="address">
-                  Address
+                  Restaurant Address (Pick on Map)
                 </label>
-                <Textarea
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  required
-                  placeholder="123 Main St, City, ZIP"
+                <MapLocationPicker
+                  value={location || undefined}
+                  onChange={setLocation}
                 />
+                <input type="hidden" name="address" value={location?.address || ""} />
               </div>
               <div>
                 <label className="font-semibold text-green-900 block mb-1" htmlFor="contact_name">
@@ -117,11 +145,13 @@ const RegisterRestaurant = () => {
                   placeholder="e.g. 5"
                 />
               </div>
+              {/* DATE & TIME RANGE AVAILABILITY */}
               <div>
                 <label className="font-semibold text-green-900 block mb-1">
                   Delivery or Pickup Availability
                 </label>
-                <RadioGroup defaultValue={availabilityType} onValueChange={setAvailabilityType} className="flex gap-6 mt-1">
+                {/* Availability type */}
+                <RadioGroup value={availabilityType} onValueChange={setAvailabilityType} className="flex gap-6 mt-1">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="pickup" id="pickup" />
                     <label htmlFor="pickup" className="text-green-900">Pickup</label>
@@ -131,17 +161,48 @@ const RegisterRestaurant = () => {
                     <label htmlFor="delivery" className="text-green-900">Delivery</label>
                   </div>
                 </RadioGroup>
+                {/* Date range picker */}
                 <div className="mt-4">
-                  <Calendar
-                    mode="multiple"
-                    selected={selectedDates}
-                    onSelect={setSelectedDates}
-                    className="bg-white p-3 border rounded-lg pointer-events-auto"
-                  />
+                  {/* Date range selection using two calendars */}
+                  <div className="flex flex-col sm:flex-row gap-3 items-center">
+                    <Calendar
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={setDateRange}
+                      numberOfMonths={2}
+                      className="bg-white p-3 border rounded-lg pointer-events-auto"
+                    />
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm text-green-900 font-medium flex items-center gap-2">
+                        <Clock className="w-4 h-4" /> Start Time
+                        <input
+                          type="time"
+                          value={timeRange.start}
+                          onChange={e =>
+                            setTimeRange(r => ({ ...r, start: e.target.value }))
+                          }
+                          required
+                          className="ml-1 border rounded px-2 py-1"
+                        />
+                      </label>
+                      <label className="text-sm text-green-900 font-medium flex items-center gap-2">
+                        <Clock className="w-4 h-4" /> End Time
+                        <input
+                          type="time"
+                          value={timeRange.end}
+                          onChange={e =>
+                            setTimeRange(r => ({ ...r, end: e.target.value }))
+                          }
+                          required
+                          className="ml-1 border rounded px-2 py-1"
+                        />
+                      </label>
+                    </div>
+                  </div>
                   <div className="text-sm text-muted-foreground mt-2">
-                    {selectedDates && selectedDates.length > 0
-                      ? `Available: ${selectedDates.map(d => format(d, "PPP")).join(", ")}`
-                      : "Select your available dates above."}
+                    {dateRange.from && dateRange.to
+                      ? `Available: ${format(dateRange.from, "PPP")} to ${format(dateRange.to, "PPP")}, from ${timeRange.start} to ${timeRange.end} each day.`
+                      : "Select an available date range and time."}
                   </div>
                 </div>
               </div>
