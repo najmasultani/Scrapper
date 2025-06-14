@@ -1,10 +1,10 @@
-
 import React, { useState, useMemo } from "react";
 import CompostListingCard from "@/components/CompostListingCard";
 import CompostFilters from "@/components/CompostFilters";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import Header from "@/components/Header";
 
 type RestaurantListing = {
   id: string;
@@ -111,6 +111,7 @@ const CompostListings = () => {
   // Optionally, add loader/error UI
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-50 via-white to-yellow-50">
+      <Header />
       <header className="w-full px-4 md:px-8 py-6 border-b flex items-center justify-between bg-white">
         <h1 className="text-2xl font-bold text-green-900">Browse Compost Listings</h1>
         <Button variant="outline" asChild>
