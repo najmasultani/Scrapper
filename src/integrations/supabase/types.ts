@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      gardener_profiles: {
+        Row: {
+          availability_type: string
+          available_dates: string[]
+          compost_type: string
+          contact_name: string
+          created_at: string
+          garden_name: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          availability_type: string
+          available_dates: string[]
+          compost_type: string
+          contact_name: string
+          created_at?: string
+          garden_name: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          availability_type?: string
+          available_dates?: string[]
+          compost_type?: string
+          contact_name?: string
+          created_at?: string
+          garden_name?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       restaurant_compost_listings: {
         Row: {
           compost_type: string

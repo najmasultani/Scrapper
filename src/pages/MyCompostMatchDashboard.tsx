@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -8,7 +7,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, TrendingUp, Activity } from "lucide-react";
+import { Calendar, User, TrendingUp, Activity, Leaf } from "lucide-react";
 import SmartNotificationsPanel from "@/components/SmartNotificationsPanel";
 import CompostBotWidget from "@/components/CompostBotWidget";
 import CompostTypeChart from "@/components/CompostTypeChart";
@@ -17,16 +16,15 @@ import { supabase } from "@/integrations/supabase/client";
 
 // ---------- UTILS
 
-// For demo: assume only one restaurant listing per user
-const fetchMyCompostData = async () => {
-  // Get current user
+// Fetch restaurant listing for current user
+const fetchMyRestaurantData = async () => {
   const {
     data: { user },
     error: userErr,
   } = await supabase.auth.getUser();
   if (!user || userErr) throw new Error("No user logged in!");
 
-  // Get user's restaurant listing
+  // Get user's restaurant listing (one per user)
   const { data: listing, error } = await supabase
     .from("restaurant_compost_listings")
     .select("*")
@@ -37,44 +35,43 @@ const fetchMyCompostData = async () => {
 
   if (error) throw new Error(error.message);
 
-  // Fallback if no listing yet
-  if (!listing)
-    return {
-      user,
-      listing: null,
-      matches: 0,
-      weeklyCompost: 0,
-      weeklyPickups: 0,
-      impactCO2e: 0,
-    };
+  return { user, restaurant: listing };
+};
 
-  // Placeholder computations (real metrics need schema/data expansion)
-  return {
-    user,
-    listing,
-    matches: 2, // Placeholder: Compute from schema later
-    weeklyCompost: 4, // Placeholder
-    weeklyPickups: 1, // Placeholder
-    impactCO2e: 12.3, // Placeholder
-  };
+// Fetch gardener profile for current user
+const fetchMyGardenerData = async () => {
+  const {
+    data: { user },
+    error: userErr,
+  } = await supabase.auth.getUser();
+  if (!user || userErr) throw new Error("No user logged in!");
+
+  // Fetch most recent gardener profile for user
+  const { data: profile, error } = await supabase
+    .from("gardener_profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  return { user, gardener: profile };
 };
 
 function OverviewPanel() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["my-dashboard-data"],
-    queryFn: fetchMyCompostData,
+  // Fetch both types, gardener takes priority over restaurant
+  const { data: gardenerData, isLoading: gardenerLoading, error: gardenerErr } = useQuery({
+    queryKey: ["my-dashboard-gardener"],
+    queryFn: fetchMyGardenerData,
+  });
+  const { data: restaurantData, isLoading: restaurantLoading, error: restaurantErr } = useQuery({
+    queryKey: ["my-dashboard-restaurant"],
+    queryFn: fetchMyRestaurantData,
   });
 
-  // Animation
-  const [showAdded, setShowAdded] = useState(false);
-  const [extraKg, setExtraKg] = useState(0);
-  const handleAddKg = () => {
-    setExtraKg(extraKg + 2);
-    setShowAdded(true);
-    setTimeout(() => setShowAdded(false), 1400);
-  };
-
-  if (isLoading)
+  if (gardenerLoading || restaurantLoading)
     return (
       <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card><CardContent>Loading...</CardContent></Card>
@@ -83,88 +80,162 @@ function OverviewPanel() {
         <Card><CardContent></CardContent></Card>
       </div>
     );
-  if (error)
+
+  if (gardenerErr)
     return (
       <div className="mb-4">
         <Card>
-          <CardContent className="text-red-500">Error: {String(error.message || error)}</CardContent>
+          <CardContent className="text-red-500">Error (Gardener): {String(gardenerErr.message || gardenerErr)}</CardContent>
         </Card>
       </div>
     );
 
-  const { user, listing, matches, weeklyCompost, weeklyPickups, impactCO2e } =
-    data || {};
+  if (restaurantErr)
+    return (
+      <div className="mb-4">
+        <Card>
+          <CardContent className="text-red-500">Error (Restaurant): {String(restaurantErr.message || restaurantErr)}</CardContent>
+        </Card>
+      </div>
+    );
 
+  // If user has a gardener profile, display that
+  if (gardenerData?.gardener) {
+    const { gardener } = gardenerData;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        {/* Role & Garden/Farm Name */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Leaf className="text-green-600" />
+            <CardTitle className="text-base">Gardener / Farmer</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <div className="font-semibold">{gardener.garden_name}</div>
+              <div className="text-xs mt-1 text-muted-foreground">{gardener.contact_name}</div>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Compost Type */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <TrendingUp className="text-yellow-700" />
+            <CardTitle className="text-base">Compost Wanted</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {gardener.compost_type}
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Pickup/Delivery */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Activity className="text-blue-700" />
+            <CardTitle className="text-base capitalize">{gardener.availability_type}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <span className="block mb-1 font-medium">Available Dates:</span>
+              {gardener.available_dates.length > 0 ? (
+                <ul className="list-disc ml-5">
+                  {gardener.available_dates.map((d: string | Date, i: number) => (
+                    <li key={i}>{typeof d === "string" ? new Date(d).toLocaleDateString() : d.toLocaleDateString()}</li>
+                  ))}
+                </ul>
+              ) : (
+                <span>No dates listed.</span>
+              )}
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Signup Date */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calendar className="text-emerald-600" />
+            <CardTitle className="text-base">Profile Created</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {gardener.created_at
+                ? new Date(gardener.created_at).toLocaleString()
+                : "-"}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Otherwise, if user has a restaurant listing, display that
+  if (restaurantData?.restaurant) {
+    const { user, restaurant } = restaurantData;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        {/* Role */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <User className="text-green-600" />
+            <CardTitle className="text-base">
+              Restaurant Partner
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {restaurant.restaurant_name || user.email}
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Compost Type */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <TrendingUp className="text-yellow-700" />
+            <CardTitle className="text-base">Compost Type</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {restaurant.compost_type}
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Pickup/Delivery Availability */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Activity className="text-blue-700" />
+            <CardTitle className="text-base capitalize">{restaurant.pickup_availability}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              <div className="font-semibold">Address:</div>
+              <div className="text-xs">{restaurant.location}</div>
+            </CardDescription>
+          </CardContent>
+        </Card>
+        {/* Signup Date */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calendar className="text-emerald-600" />
+            <CardTitle className="text-base">Listing Created</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              {restaurant.created_at
+                ? new Date(restaurant.created_at).toLocaleString()
+                : "-"}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No data yet for this user
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-      {/* Role */}
+    <div className="mb-4">
       <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
-          <User className="text-green-600" />
-          <CardTitle className="text-base">
-            {listing?.restaurant_name
-              ? "Restaurant Partner"
-              : "No listing found"}
-          </CardTitle>
-        </CardHeader>
         <CardContent>
-          <CardDescription>
-            {listing?.restaurant_name || user.email}
-          </CardDescription>
-        </CardContent>
-      </Card>
-
-      {/* Matches Made */}
-      <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
-          <TrendingUp className="text-yellow-700" />
-          <CardTitle className="text-base">
-            {matches} Matches
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardDescription>{matches} successful pickups</CardDescription>
-        </CardContent>
-      </Card>
-
-      {/* Weekly Activity */}
-      <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
-          <Activity className="text-blue-700" />
-          <CardTitle className="text-base relative select-none">
-            <span>
-              {weeklyCompost + extraKg} kg listed
-              <button
-                className="ml-2 text-xs bg-green-100 rounded px-2 py-0.5 hover:bg-green-200 transition"
-                onClick={handleAddKg}
-                aria-label="Add compost"
-                type="button"
-              >
-                +2 kg
-              </button>
-            </span>
-            {showAdded && (
-              <span className="absolute left-24 -top-6 bg-green-500 text-white rounded px-2 py-1 text-xs animate-fade-in shadow-lg z-10 transition">
-                +2 kg added!
-              </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardDescription>
-            {weeklyPickups} pickups this week
-          </CardDescription>
-        </CardContent>
-      </Card>
-
-      {/* Impact Estimate */}
-      <Card>
-        <CardHeader className="flex flex-row items-center gap-2">
-          <Calendar className="text-emerald-600" />
-          <CardTitle className="text-base">{impactCO2e + extraKg * 0.6} kg CO₂e</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardDescription>GHG diverted (lifetime)</CardDescription>
+          <span className="text-gray-500">No profile or listing found for your account.</span>
         </CardContent>
       </Card>
     </div>
