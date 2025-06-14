@@ -828,7 +828,7 @@ const MyCompostMatchDashboard = ({ role = "restaurant", demo = false }: Props) =
 
       <SmartNotificationsPanel notifications={demo ? notifications : notificationsData} />
 
-      <CompostTypeChart data={demo ? compostStats : realCompostStats} loading={demo ? compostLoading : realCompostLoading} />
+      <CompostTypeChart data={demo ? compostStats : realCompostStats} loading={demo ? compostLoading : realCompostLoading} role={userRole} />
 
       <CompostBotWidget role={userRole} />
 

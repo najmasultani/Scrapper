@@ -11,11 +11,12 @@ interface CompostDataEntry {
 interface CompostTypeChartProps {
   data: CompostDataEntry[];
   loading?: boolean;
+  role?: "restaurant" | "gardener";
 }
 
 const COLORS = ["#10B981", "#F59E42", "#60A5FA", "#FBBF24"];
 
-const CompostTypeChart: React.FC<CompostTypeChartProps> = ({ data, loading }) => {
+const CompostTypeChart: React.FC<CompostTypeChartProps> = ({ data, loading, role = "restaurant" }) => {
   if (loading) {
     return (
       <div className="rounded-lg border bg-white p-4 mb-4 min-h-[270px] flex items-center justify-center">
@@ -28,7 +29,11 @@ const CompostTypeChart: React.FC<CompostTypeChartProps> = ({ data, loading }) =>
     // Show empty state gracefully
     return (
       <div className="rounded-lg border bg-white p-4 mb-4 min-h-[270px] flex flex-col items-center justify-center">
-        <div className="font-bold text-green-800 mb-2">Compost Types Shared (This Month)</div>
+        <div className="font-bold text-green-800 mb-2">
+          {role === "restaurant"
+            ? "Compost Types Shared (This Month)"
+            : "Compost Types Collected (This Month)"}
+        </div>
         <div className="text-gray-500 italic">No compost data to display.</div>
       </div>
     );
@@ -37,14 +42,16 @@ const CompostTypeChart: React.FC<CompostTypeChartProps> = ({ data, loading }) =>
   const handleBarClick = (data: any, index: number) => {
     toast({
       title: "Compost Detail",
-      description: `You shared ${data.kg} kg of ${data.type} this month!`,
+      description: `You ${role === "restaurant" ? "shared" : "collected"} ${data.kg} kg of ${data.type} this month!`,
     });
   };
 
   return (
     <div className="rounded-lg border bg-white p-4 mb-4">
       <div className="font-bold text-green-800 mb-2">
-        Compost Types Shared (This Month)
+        {role === "restaurant"
+          ? "Compost Types Shared (This Month)"
+          : "Compost Types Collected (This Month)"}
       </div>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} className="cursor-pointer">
