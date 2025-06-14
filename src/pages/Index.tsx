@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
@@ -6,6 +5,7 @@ import Benefits from "@/components/Benefits";
 import CompostBotPreview from "@/components/CompostBotPreview";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import RoleSelectCard from "@/components/RoleSelectCard";
 
 const VisualHero = () => (
   <section className="relative w-full bg-gradient-to-br from-green-50 via-white to-yellow-50 px-4 md:px-0 pt-8 pb-4 md:pt-16 md:pb-10">
@@ -70,27 +70,9 @@ const Index = () => {
       <main className="flex-1 flex flex-col items-center justify-center">
         {/* New Visual Hero */}
         <VisualHero />
-        {/* "I am a..." selector now appears BELOW the hero */}
-        <div className="flex flex-col gap-8 mt-6 w-full max-w-xl">
-          <h2 className="text-3xl font-bold text-center text-green-800 mb-4 animate-fade-in">
-            I am a...
-          </h2>
-          <div className="flex flex-col md:flex-row gap-6 justify-center">
-            <Button
-              className="flex-1 bg-green-600 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/dashboard/restaurant")}
-              data-testid="demo-restaurant-btn"
-            >
-              Restaurant
-            </Button>
-            <Button
-              className="flex-1 bg-amber-500 text-white text-lg py-6 rounded-xl shadow-lg hover:scale-[1.03] transition-all"
-              onClick={() => navigate("/dashboard/gardener")}
-              data-testid="demo-gardener-btn"
-            >
-              Gardener / Farmer
-            </Button>
-          </div>
+        {/* Centered Card for role selection */}
+        <div className="mt-[-2.5rem] z-10 w-full flex flex-col items-center">
+          <RoleSelectCard />
         </div>
         {/* Original Homepage Content */}
         <div className="mt-20 w-full">
