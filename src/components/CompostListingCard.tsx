@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Chat, Save } from "lucide-react";
+import { MessageCircle, Save } from "lucide-react";
 
 type Listing = {
   type: string;
@@ -51,7 +51,7 @@ const CompostListingCard: React.FC<Listing> = ({
           Request Pickup
         </Button>
         <Button variant="ghost" onClick={() => setChatOpen(true)}>
-          <Chat />
+          <MessageCircle />
           Chat
         </Button>
         <Button variant="ghost">
