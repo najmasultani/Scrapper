@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import MapLocationPicker from "@/components/MapLocationPicker";
 import ImageUpload from "@/components/ImageUpload";
 import { CalendarIcon, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import type { DateRange } from "react-day-picker";
 
 const compostTypes = [
   "Vegetable Scraps",
@@ -21,8 +21,6 @@ const compostTypes = [
   "Eggshells",
   "Other",
 ];
-
-type DateRange = { from?: Date; to?: Date };
 
 const RegisterRestaurant = () => {
   const navigate = useNavigate();
