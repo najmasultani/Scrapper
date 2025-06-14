@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 
 const Header = () => (
@@ -16,7 +15,7 @@ const Header = () => (
     </div>
     <nav className="flex items-center gap-3">
       <Button variant="outline" className="hidden md:inline-block" asChild>
-        <a href="#login">Login</a>
+        <a href="/auth">Login</a>
       </Button>
       <Button className="bg-green-600 hover:bg-green-700 shadow-green-300/20 shadow-md animate-fade-in" asChild>
         <a href="#signup">Sign Up Free</a>
