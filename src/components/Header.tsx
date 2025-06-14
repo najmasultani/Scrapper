@@ -21,6 +21,9 @@ const Header = () => (
       <Button className="bg-green-600 hover:bg-green-700 shadow-green-300/20 shadow-md animate-fade-in" asChild>
         <a href="#signup">Sign Up Free</a>
       </Button>
+      <Button variant="secondary" className="hidden md:inline-block" asChild>
+        <a href="/listings">Browse Compost</a>
+      </Button>
     </nav>
   </header>
 );
