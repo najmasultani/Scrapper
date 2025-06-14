@@ -2,43 +2,65 @@
 import React, { useState } from "react";
 import { Bot, MessageCircle } from "lucide-react";
 
+// Expanded bot knowledge base with enhanced compost education content
 const BOT_KNOWLEDGE = [
+  // 💚 What can go in compost
   {
-    pattern: /what.*(go|can|should).*in.*compost/i,
-    answer: "You can compost fruit & veggie scraps, coffee grounds, eggshells, grass clippings, and leaves. Avoid meat, dairy, and oily foods!",
+    pattern: /(what\s*(can|go|goes|should)\s*(i\s*)?(put|add)?\s*(in|into)?\s*compost|compostable|compost\s*items|fruit|vegetable|scrap|egg|coffee|tea|yard|napkin|paper)/i,
+    answer:
+      "🟩 You can compost: fruit & vegetable scraps, coffee grounds & filters, tea bags (avoid those with plastic), eggshells, yard trimmings, leaves, grass clippings, and plain paper napkins/towels.",
   },
+  // ❌ What can't go in compost
   {
-    pattern: /how.*(store|keep).*compost/i,
-    answer: "Store kitchen scraps in a sealed container to trap odors. Take them to your outdoor bin every few days. Compost piles should be covered and kept moist, not soggy.",
+    pattern: /(what.*(can't|can not|cannot|shouldn't|should not).*compost|not.*in.*compost|meat|fish|bones|dairy|oily|greasy|plastic|synthetic|chemically-treated|glossy|colored\s*paper)/i,
+    answer:
+      "❌ Avoid composting: meat, fish, bones, dairy products, oily or greasy food waste, plastics or synthetic materials, chemically-treated wood, and glossy or colored paper.",
   },
+  // 🍂 Composting tips by season
   {
-    pattern: /(tip|tips|advice).*season|summer|winter|spring|fall|autumn/i,
-    answer: "In summer, turn compost often and keep it moist. In winter, insulate with extra browns. Each season has its own compost rhythm—ask more!",
+    pattern: /(tip|tips|advice|how).*season|summer|winter|spring|fall|autumn/i,
+    answer:
+      "🍂 Composting Tips by Season:\n- Summer: Stir pile weekly; manage smell with extra 'browns' like leaves.\n- Winter: Composting slows; keep adding scraps but cover them well.\n- Spring: Perfect time to use finished compost in your garden.\n- Fall: Fallen leaves are carbon gold—mix them with kitchen scraps!",
   },
+  // 🧪 Compost types and qualities
   {
-    pattern: /citrus|orange|fruit/i,
-    answer: "Citrus peels and fruit scraps are OK in moderation, but don’t overdo it (less than 10%) and chop them up for faster breakdown.",
+    pattern: /(type|types|quality|qualities|green.*brown|balance|ratio|nitrogen|carbon)/i,
+    answer:
+      "🧪 Compost Types & Balance: Green materials (nitrogen) include food scraps & grass. Brown materials (carbon) include leaves, paper, straw. Aim for a 2:1 ratio of browns to greens for best results!",
   },
+  // 🐛 Common problems & fixes
   {
-    pattern: /[wW]hy.*compost|[bB]enefit(s)?.*compost/i,
-    answer: "Composting reduces landfill waste and creates healthy soil full of nutrients for plants. 🌱",
+    pattern: /(problem|issue|problem:|smell|smells|bad|not breaking down|too dry|too wet|pest|flies|rodent|animal|slow)/i,
+    answer:
+      "🐛 Common Compost Problems:\n- Smells bad? Likely too much green/wet. Add more browns (leaves/paper) and turn the pile.\n- Not breaking down? May be too dry/cold. Add moisture and mix more.\n- Attracting pests? Avoid meat/dairy and always cover food scraps with browns.",
   },
+  // Specific: fruit, citrus etc
   {
-    pattern: /storage|odor|smell/i,
-    answer: "Use a tightly closed bin for kitchen scraps. Add browns like paper or leaves to reduce odors.",
+    pattern: /citrus|orange|lemon|fruit/i,
+    answer:
+      "Citrus peels and other fruit scraps are okay in moderation—keep them under 10% of your total compost and chop up large pieces for faster breakdown.",
   },
+  // Storage/storing compost
   {
-    pattern: /(leaf|leaves|grass|lawn)/i,
-    answer: "Leaves and grass add carbon and nitrogen. Shred or mix with food scraps for balance!",
+    pattern: /(how.*store|store.*compost|keep.*compost|storage|odor|smell)/i,
+    answer:
+      "Store kitchen scraps in a sealed container to trap odors, and transfer them to your outdoor bin regularly. Add 'browns' like paper or leaves to reduce odor.",
   },
+  // Leaves/grass/lawn
   {
-    pattern: /(meat|oily|dairy)/i,
-    answer: "Avoid composting meat, dairy, or greasy foods—they attract pests and slow the process.",
+    pattern: /(leaf|leaves|grass|lawn|clippings)/i,
+    answer: "Leaves and grass clippings are great carbon and nitrogen sources—shred and mix them with food scraps for a balanced compost.",
   },
+  // Benefits/why compost
+  {
+    pattern: /(why|benefit|advantages).*compost/i,
+    answer: "Composting diverts waste from landfills and creates nutrient-rich soil for your garden. 🌱",
+  },
+  // General fallback, educator mode
 ];
 
 const DEFAULT_REPLY =
-  "I'm CompostBot! Ask me about composting, like what goes in compost, how to store scraps, or for tips any season!";
+  "I'm CompostBot! Ask me about composting—what goes in, storage tips, balancing your compost pile, common problems, or how to keep it healthy year-round!";
 
 const CompostBotWidget = ({
   role = "restaurant",
@@ -61,7 +83,7 @@ const CompostBotWidget = ({
     } else {
       // fallback: be encouraging and educational
       response =
-        "Great question! CompostBot can help with how to compost, what to add or avoid, storage, and more. Please ask about composting topics!";
+        "Great question! CompostBot can help with:\n🟩 What goes in (or stays out of) compost\n🍂 How to store compost scraps\n🧪 The ideal brown/green balance\n🐛 Fixing common problems\nSeasonal composting tips, and more! Please ask anything about composting.";
     }
     setHistory((h) => [
       ...h,
@@ -88,7 +110,7 @@ const CompostBotWidget = ({
           msg.from === "bot" ? (
             <div
               key={i}
-              className="flex items-start gap-2 text-green-900 bg-green-50/60 px-3 py-1.5 rounded animate-fade-in"
+              className="flex items-start gap-2 text-green-900 bg-green-50/60 px-3 py-1.5 rounded animate-fade-in whitespace-pre-line"
             >
               <Bot className="w-4 h-4 mt-1 mr-1" />
               <span>{msg.text}</span>
