@@ -10,6 +10,7 @@
 ## Project Info
 
 **Live Project**: [Lovable AI Compost Search](https://lovable.dev/projects/a85ae806-c5b6-4d2e-98b5-7cfbf0b84b51)
+**Devpost Submission**: [View on Devpost](https://devpost.com/software/scrapple?ref_content=user-portfolio&ref_feature=in_progress)
 
 This is a prompt-engineering-driven web application designed to enhance compost reuse by enabling users to perform AI-powered natural language searches for compost listings. The project leverages Gemini AI to make eco-friendly resource sharing easier and more intuitive.
 
