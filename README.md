@@ -25,7 +25,6 @@ This project includes an intelligent search feature powered by Google's Gemini A
    - Copy `.env.example` to `.env`
    - Add your Gemini API key:
      ```
-     VITE_GEMINI_API_KEY=your_actual_gemini_api_key_here
      ```
 
 3. **Security Note**: 
