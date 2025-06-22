@@ -1,8 +1,17 @@
 # Welcome to your Lovable project
+# 🌱 Lovable Compost Finder – Prompt Engineering Project
 
-## Project info
+**Built for the AI Collection x UTMIIST Hackathon**
 
-**URL**: https://lovable.dev/projects/a85ae806-c5b6-4d2e-98b5-7cfbf0b84b51
+**Contributors**: Najma Sultani, Hanhee Lee, Luke Blommesteyn, Andrew 
+
+---
+
+## Project Info
+
+**Live Project**: [Lovable AI Compost Search](https://lovable.dev/projects/a85ae806-c5b6-4d2e-98b5-7cfbf0b84b51)
+
+This is a prompt-engineering-driven web application designed to enhance compost reuse by enabling users to perform AI-powered natural language searches for compost listings. The project leverages Gemini AI to make eco-friendly resource sharing easier and more intuitive.
 
 ## AI-Powered Search Feature
 
