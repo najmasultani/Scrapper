@@ -3,7 +3,7 @@
 
 **Built for the AI Collection x UTMIIST Hackathon**
 
-**Contributors**: Najma Sultani, Hanhee Lee, Luke Blommesteyn, Andrew 
+**Contributors**: Najma Sultani, Hanhee Lee, Luke Blommesteyn, Andrew Chu
 
 ---
 
